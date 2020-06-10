@@ -711,3 +711,118 @@ test('can handle images in heading', t => {
         "version": "1.0"
     });
 });
+
+test('can handle table with text', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>text1</strong>
+                    </td>
+                    <td>
+                        <strong>text2</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <em>italics</em>
+                    </td>
+                    <td>
+                        normal text
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        text
+                    </td>
+                    <td>
+                        text
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                "type": "ColumnSet",
+                "columns": [
+                    {
+                        "type": "Column",
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "**text1**",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "_italics_",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "text",
+                                "wrap": true
+                            }
+                        ],
+                        "style": "emphasis"
+                    },
+                    {
+                        "type": "Column",
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "**text2**",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "normal text",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "text",
+                                "wrap": true
+                            }
+                        ],
+                        "style": "emphasis"
+                    }
+                ]
+            }
+        ],
+        "actions": [],
+        "version": "1.0"
+    });
+});
+
+test('surfaces fallback text for tables with more than three columns', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                type: "TextBlock",
+                text: "Table with more than 3 columns",
+                wrap: true
+            }
+        ],
+        "actions": [],
+        "version": "1.0"
+    });
+});

@@ -49,7 +49,9 @@ var AdaptiveHtml = (function () {
     textBlock: "TextBlock",
     container: "Container",
     image: "Image",
-    adaptiveCard: "AdaptiveCard"
+    adaptiveCard: "AdaptiveCard",
+    column: "Column",
+    columnSet: "ColumnSet"
   });
   function isTextBlock(card) {
     return isCardType(card, cardTypes.textBlock);
@@ -60,8 +62,14 @@ var AdaptiveHtml = (function () {
   function isImage(card) {
     return isCardType(card, cardTypes.image);
   }
+  function isColumn(card) {
+    return isCardType(card, cardTypes.column);
+  }
+  function isColumnSet(card) {
+    return isCardType(card, cardTypes.columnSet);
+  }
   function isCardElement(card) {
-    return isTextBlock(card) || isImage(card) || isContainer(card);
+    return isTextBlock(card) || isImage(card) || isContainer(card) || isColumn(card) || isColumnSet(card);
   }
   function getTextBlocks(cardCollection) {
     return getBlocks(cardCollection, cardTypes.textBlock);
@@ -149,6 +157,22 @@ var AdaptiveHtml = (function () {
     };
     setOptions(image, options);
     return image;
+  }
+  function createColumn(content, options) {
+    var column = {
+      type: cardTypes.column,
+      items: content
+    };
+    setOptions(column, options);
+    return column;
+  }
+  function createColumnSet(columns, options) {
+    var columnSet = {
+      type: cardTypes.columnSet,
+      columns: columns
+    };
+    setOptions(columnSet, options);
+    return columnSet;
   } // Wrap adaptive card elements in a container
 
   function wrap(elements, options) {
@@ -332,6 +356,54 @@ var AdaptiveHtml = (function () {
       return createImage(src, {
         altText: alt
       });
+    }
+  };
+  rules.tableSection = {
+    filter: ['thead', 'tbody', 'tfoot'],
+    replacement: function replacement(content, node) {
+      var rows = content.length;
+      var columns = (content[0] || {
+        items: []
+      }).items.length;
+
+      if (columns > 3) {
+        return createTextBlock("Table with more than 3 columns");
+      } //transform into columns
+
+
+      var columnSet = [];
+      var columnBlocks = [];
+
+      for (var i = 0; i < columns; i++) {
+        for (var j = 0; j < rows; j++) {
+          columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+        }
+
+        columnSet = columnSet.concat(createColumn(columnBlocks, {
+          style: "emphasis"
+        }));
+        columnBlocks = [];
+      }
+
+      return createColumnSet(columnSet);
+    }
+  };
+  rules.tableRow = {
+    filter: 'tr',
+    replacement: function replacement(content, node) {
+      return wrap(content);
+    }
+  };
+  rules.tableCell = {
+    filter: ['th', 'td'],
+    replacement: function replacement(content, node) {
+      return content;
+    }
+  };
+  rules.table = {
+    filter: 'table',
+    replacement: function replacement(content, node) {
+      return content;
     }
   };
   /* This must be the last rule */
