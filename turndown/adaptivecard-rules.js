@@ -28,7 +28,7 @@ const rules = {};
 rules.blank = {
     filter: function (node) {
         return (
-            ['A', 'TH', 'TD'].indexOf(node.nodeName) === -1 &&
+            ['a', 'th', 'td'].indexOf(node.nodeName) === -1 &&
             /^\s*$/i.test(node.textContent) &&
             !isVoid(node) &&
             !hasVoid(node)
@@ -80,7 +80,7 @@ rules.list = {
     filter: ['ul', 'ol'],
     // content = array of listitem containers
     replacement: function (listItemContainers, node) {
-        var isOrdered = node.nodeName === 'OL';
+        var isOrdered = node.nodeName === 'ol';
         var startIndex = parseInt(node.getAttribute('start'), 10) || 1; // only applicable to ordered lists
         var blocks = (listItemContainers || []).map((listItemContainer, listItemIndex) => {
             var listItemElems = unwrap(listItemContainer);
@@ -142,7 +142,7 @@ rules.listItem = {
 rules.inlineLink = {
     filter: function (node) {
         return (
-            node.nodeName === 'A' &&
+            node.nodeName === 'a' &&
             node.getAttribute('href')
         );
     },
