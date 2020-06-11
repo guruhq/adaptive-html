@@ -826,3 +826,29 @@ test('surfaces fallback text for tables with more than three columns', t => {
         "version": "1.0"
     });
 });
+
+test('surfaces fallback text for table with any cell with more than max character count', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>525221095099885725300239130286978126745863786264859982756838656589870791324251307631085496719063267266840984846410304693</td>
+                    <td>text</td>
+                    <td>text</td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                type: "TextBlock",
+                text: "Better to view in the webapp",
+                wrap: true
+            }
+        ],
+        "actions": [],
+        "version": "1.0"
+    });
+});
