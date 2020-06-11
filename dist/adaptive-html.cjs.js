@@ -217,7 +217,7 @@ function hasVoid(node) {
 var rules = {};
 rules.blank = {
   filter: function filter(node) {
-    return ['a', 'th', 'td'].indexOf(node.nodeName) === -1 && /^\s*$/i.test(node.textContent) && !isVoid(node) && !hasVoid(node);
+    return ['a', 'th', 'td'].indexOf(node.nodeName.toLowerCase()) === -1 && /^\s*$/i.test(node.textContent) && !isVoid(node) && !hasVoid(node);
   },
   replacement: function replacement(content, node) {
     if (node.textContent) {
@@ -260,7 +260,7 @@ rules.list = {
   filter: ['ul', 'ol'],
   // content = array of listitem containers
   replacement: function replacement(listItemContainers, node) {
-    var isOrdered = node.nodeName === 'ol';
+    var isOrdered = node.nodeName.toLowerCase() === 'ol';
     var startIndex = parseInt(node.getAttribute('start'), 10) || 1; // only applicable to ordered lists
 
     var blocks = (listItemContainers || []).map(function (listItemContainer, listItemIndex) {
@@ -322,7 +322,7 @@ rules.listItem = {
 };
 rules.inlineLink = {
   filter: function filter(node) {
-    return node.nodeName === 'a' && node.getAttribute('href');
+    return node.nodeName.toLowerCase() === 'a' && node.getAttribute('href');
   },
   replacement: function replacement(content, node) {
     var href = node.getAttribute('href');
