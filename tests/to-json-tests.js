@@ -818,7 +818,7 @@ test('surfaces fallback text for tables with more than three columns', t => {
         "body": [
             {
                 type: "TextBlock",
-                text: "Better to view in the webapp",
+                text: "To view this table content, please open this card in the Guru app",
                 wrap: true
             }
         ],
@@ -844,7 +844,7 @@ test('surfaces fallback text for table with any cell with more than max characte
         "body": [
             {
                 type: "TextBlock",
-                text: "Better to view in the webapp",
+                text: "To view this table content, please open this card in the Guru app",
                 wrap: true
             }
         ],

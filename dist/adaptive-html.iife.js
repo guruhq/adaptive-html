@@ -361,34 +361,35 @@ var AdaptiveHtml = (function () {
   rules.tableSection = {
     filter: ['thead', 'tbody', 'tfoot'],
     replacement: function replacement(content, node) {
-      var maxColumnLength = 3;
-      var maxCellLength = 100;
+      var fallbackText = 'To view this table content, please open this card in the Guru app';
+      var maxColumns = 3;
+      var maxCellCharacters = 100;
       var rows = content.length;
       var columns = (content[0] || {
         items: []
       }).items.length;
 
-      for (var i = 0; i < content.length; i++) {
+      if (columns > maxColumns) {
+        return createTextBlock(fallbackText);
+      }
+
+      for (var i = 0; i < rows; i++) {
         var items = content[i].items || [];
 
         if (items.some(function (item) {
-          return (item.text || '').length > maxCellLength;
+          return (item.text || '').length > maxCellCharacters;
         })) {
-          return createTextBlock("Better to view in the webapp");
+          return createTextBlock(fallbackText);
         }
-      }
-
-      if (columns > maxColumnLength) {
-        return createTextBlock('Better to view in the webapp');
       } //transform into columns
 
 
       var columnSet = [];
       var columnBlocks = [];
 
-      for (var _i = 0; _i < columns; _i++) {
+      for (var i = 0; i < columns; i++) {
         for (var j = 0; j < rows; j++) {
-          columnBlocks = columnBlocks.concat(toArray(content[j].items[_i]));
+          columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
         }
 
         columnSet = columnSet.concat(createColumn(columnBlocks, {
