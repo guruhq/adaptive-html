@@ -204,7 +204,7 @@ var AdaptiveHtml = (function () {
   function isBlock(node) {
     return blockElements.indexOf(node.nodeName.toLowerCase()) !== -1;
   }
-  var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+  var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span'];
   function isVoid(node) {
     return voidElements.indexOf(node.nodeName.toLowerCase()) !== -1;
   }
