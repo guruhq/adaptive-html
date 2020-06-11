@@ -818,7 +818,7 @@ test('surfaces fallback text for tables with more than three columns', t => {
         "body": [
             {
                 type: "TextBlock",
-                text: "Table with more than 3 columns",
+                text: "Better to view in the webapp",
                 wrap: true
             }
         ],
