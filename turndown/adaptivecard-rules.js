@@ -186,26 +186,34 @@ rules.image = {
 rules.tableSection = {
     filter: ['thead', 'tbody', 'tfoot'],
     replacement: function replacement(content, node) {
-      var rows = content.length;
-      var columns = (content[0] || { items: []}).items.length;
-  
-      if (columns > 3) {
-        return createTextBlock("Table with more than 3 columns");
-      }
-  
-      //transform into columns
-      let columnSet = [];
-      let columnBlocks = [];
-  
-      for (var i = 0; i < columns; i++) {
-        for (var j = 0; j < rows; j++) {
-          columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+        const maxColumnLength = 3;
+        const maxCellLength = 100;
+        const rows = content.length;
+        const columns = (content[0] || { items: []}).items.length;
+
+        for (var i = 0; i < content.length; i++) {
+            let items = content[i].items || [];
+            if (items.some((item) => (item.text || '').length > maxCellLength))  {
+              return createTextBlock("Better to view in the webapp");
+            }
         }
-        columnSet = columnSet.concat(createColumn(columnBlocks, { style: "emphasis" }));
-        columnBlocks = [];
-      }
   
-      return createColumnSet(columnSet);
+        if (columns > maxColumnLength) {
+            return createTextBlock('Better to view in the webapp');
+        }
+  
+        //transform into columns
+        let columnSet = [];
+        let columnBlocks = [];
+        for (let i = 0; i < columns; i++) {
+            for (let j = 0; j < rows; j++) {
+                columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+            }
+            columnSet = columnSet.concat(createColumn(columnBlocks, { style: 'emphasis' }));
+            columnBlocks = [];
+        }
+  
+        return createColumnSet(columnSet);
     }
 };
 

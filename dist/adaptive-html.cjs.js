@@ -360,26 +360,38 @@ rules.image = {
 rules.tableSection = {
   filter: ['thead', 'tbody', 'tfoot'],
   replacement: function replacement(content, node) {
+    var maxColumnLength = 3;
+    var maxCellLength = 100;
     var rows = content.length;
     var columns = (content[0] || {
       items: []
     }).items.length;
 
-    if (columns > 3) {
-      return createTextBlock("Table with more than 3 columns");
+    for (var i = 0; i < content.length; i++) {
+      var items = content[i].items || [];
+
+      if (items.some(function (item) {
+        return (item.text || '').length > maxCellLength;
+      })) {
+        return createTextBlock("Better to view in the webapp");
+      }
+    }
+
+    if (columns > maxColumnLength) {
+      return createTextBlock('Better to view in the webapp');
     } //transform into columns
 
 
     var columnSet = [];
     var columnBlocks = [];
 
-    for (var i = 0; i < columns; i++) {
+    for (var _i = 0; _i < columns; _i++) {
       for (var j = 0; j < rows; j++) {
-        columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+        columnBlocks = columnBlocks.concat(toArray(content[j].items[_i]));
       }
 
       columnSet = columnSet.concat(createColumn(columnBlocks, {
-        style: "emphasis"
+        style: 'emphasis'
       }));
       columnBlocks = [];
     }
