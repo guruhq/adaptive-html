@@ -3,6 +3,8 @@ import {
     unwrap,
     createTextBlock,
     createHeadingTextBlock,
+    createColumn,
+    createColumnSet,
     createImage
 } from '../lib/adaptiveCardHelper';
 import {
@@ -11,6 +13,9 @@ import {
     isTextBlock,
     cardTypes
 } from '../lib/adaptiveCardFilter';
+import {
+    toArray
+} from '../lib/utilityHelper';
 import {
     isVoid,
     hasVoid,
@@ -177,6 +182,63 @@ rules.image = {
         });
     }
 };
+
+rules.tableSection = {
+    filter: ['thead', 'tbody', 'tfoot'],
+    replacement: function replacement(content, node) {
+        const fallbackText = 'To view this table content, please open this card in the Guru app';
+        const maxColumns = 3;
+        const maxCellCharacters = 100;
+        const rows = content.length;
+        const columns = (content[0] || { items: []}).items.length;
+
+        if (columns > maxColumns) {
+            return createTextBlock(fallbackText);
+        }
+
+        for (var i = 0; i < rows; i++) {
+            let items = content[i].items || [];
+            if (items.some((item) => (item.text || '').length > maxCellCharacters))  {
+              return createTextBlock(fallbackText);
+            }
+        }
+  
+        //transform into columns
+        let columnSet = [];
+        let columnBlocks = [];
+        for (var i = 0; i < columns; i++) {
+            for (var j = 0; j < rows; j++) {
+                columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+            }
+            columnSet = columnSet.concat(createColumn(columnBlocks, { style: 'emphasis' }));
+            columnBlocks = [];
+        }
+  
+        return createColumnSet(columnSet);
+    }
+};
+
+rules.tableRow = {
+    filter: 'tr',
+    replacement: function replacement(content, node) {
+      return wrap(content);
+    }
+};
+
+rules.tableCell = {
+    filter: ['th', 'td'],
+    replacement: function replacement(content, node) {
+      return content;
+    }
+};
+
+rules.table = {
+    filter: 'table',
+    replacement: function replacement(content, node) {
+      return content;
+    }
+};
+
 
 /* This must be the last rule */
 rules.default = {

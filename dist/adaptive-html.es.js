@@ -46,7 +46,9 @@ var cardTypes = Object.freeze({
   textBlock: "TextBlock",
   container: "Container",
   image: "Image",
-  adaptiveCard: "AdaptiveCard"
+  adaptiveCard: "AdaptiveCard",
+  column: "Column",
+  columnSet: "ColumnSet"
 });
 function isTextBlock(card) {
   return isCardType(card, cardTypes.textBlock);
@@ -57,8 +59,14 @@ function isContainer(card) {
 function isImage(card) {
   return isCardType(card, cardTypes.image);
 }
+function isColumn(card) {
+  return isCardType(card, cardTypes.column);
+}
+function isColumnSet(card) {
+  return isCardType(card, cardTypes.columnSet);
+}
 function isCardElement(card) {
-  return isTextBlock(card) || isImage(card) || isContainer(card);
+  return isTextBlock(card) || isImage(card) || isContainer(card) || isColumn(card) || isColumnSet(card);
 }
 function getTextBlocks(cardCollection) {
   return getBlocks(cardCollection, cardTypes.textBlock);
@@ -146,6 +154,22 @@ function createImage(url, options) {
   };
   setOptions(image, options);
   return image;
+}
+function createColumn(content, options) {
+  var column = {
+    type: cardTypes.column,
+    items: content
+  };
+  setOptions(column, options);
+  return column;
+}
+function createColumnSet(columns, options) {
+  var columnSet = {
+    type: cardTypes.columnSet,
+    columns: columns
+  };
+  setOptions(columnSet, options);
+  return columnSet;
 } // Wrap adaptive card elements in a container
 
 function wrap(elements, options) {
@@ -177,7 +201,7 @@ var blockElements = ['address', 'article', 'aside', 'audio', 'blockquote', 'body
 function isBlock(node) {
   return blockElements.indexOf(node.nodeName.toLowerCase()) !== -1;
 }
-var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span'];
 function isVoid(node) {
   return voidElements.indexOf(node.nodeName.toLowerCase()) !== -1;
 }
@@ -329,6 +353,67 @@ rules.image = {
     return createImage(src, {
       altText: alt
     });
+  }
+};
+rules.tableSection = {
+  filter: ['thead', 'tbody', 'tfoot'],
+  replacement: function replacement(content, node) {
+    var fallbackText = 'To view this table content, please open this card in the Guru app';
+    var maxColumns = 3;
+    var maxCellCharacters = 100;
+    var rows = content.length;
+    var columns = (content[0] || {
+      items: []
+    }).items.length;
+
+    if (columns > maxColumns) {
+      return createTextBlock(fallbackText);
+    }
+
+    for (var i = 0; i < rows; i++) {
+      var items = content[i].items || [];
+
+      if (items.some(function (item) {
+        return (item.text || '').length > maxCellCharacters;
+      })) {
+        return createTextBlock(fallbackText);
+      }
+    } //transform into columns
+
+
+    var columnSet = [];
+    var columnBlocks = [];
+
+    for (var i = 0; i < columns; i++) {
+      for (var j = 0; j < rows; j++) {
+        columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+      }
+
+      columnSet = columnSet.concat(createColumn(columnBlocks, {
+        style: 'emphasis'
+      }));
+      columnBlocks = [];
+    }
+
+    return createColumnSet(columnSet);
+  }
+};
+rules.tableRow = {
+  filter: 'tr',
+  replacement: function replacement(content, node) {
+    return wrap(content);
+  }
+};
+rules.tableCell = {
+  filter: ['th', 'td'],
+  replacement: function replacement(content, node) {
+    return content;
+  }
+};
+rules.table = {
+  filter: 'table',
+  replacement: function replacement(content, node) {
+    return content;
   }
 };
 /* This must be the last rule */

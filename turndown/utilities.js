@@ -13,7 +13,7 @@ export function isBlock(node) {
 
 export const voidElements = [
     'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
-    'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+    'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span'
 ];
 
 export function isVoid(node) {

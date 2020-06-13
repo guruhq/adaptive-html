@@ -711,3 +711,144 @@ test('can handle images in heading', t => {
         "version": "1.0"
     });
 });
+
+test('can handle table with text', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>text1</strong>
+                    </td>
+                    <td>
+                        <strong>text2</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <em>italics</em>
+                    </td>
+                    <td>
+                        normal text
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        text
+                    </td>
+                    <td>
+                        text
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                "type": "ColumnSet",
+                "columns": [
+                    {
+                        "type": "Column",
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "**text1**",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "_italics_",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "text",
+                                "wrap": true
+                            }
+                        ],
+                        "style": "emphasis"
+                    },
+                    {
+                        "type": "Column",
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "**text2**",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "normal text",
+                                "wrap": true
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": "text",
+                                "wrap": true
+                            }
+                        ],
+                        "style": "emphasis"
+                    }
+                ]
+            }
+        ],
+        "actions": [],
+        "version": "1.0"
+    });
+});
+
+test('surfaces fallback text for tables with more than three columns', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                type: "TextBlock",
+                text: "To view this table content, please open this card in the Guru app",
+                wrap: true
+            }
+        ],
+        "actions": [],
+        "version": "1.0"
+    });
+});
+
+test('surfaces fallback text for table with any cell with more than max character count', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>525221095099885725300239130286978126745863786264859982756838656589870791324251307631085496719063267266840984846410304693</td>
+                    <td>text</td>
+                    <td>text</td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                type: "TextBlock",
+                text: "To view this table content, please open this card in the Guru app",
+                wrap: true
+            }
+        ],
+        "actions": [],
+        "version": "1.0"
+    });
+});
