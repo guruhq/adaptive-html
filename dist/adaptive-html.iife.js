@@ -51,7 +51,9 @@ var AdaptiveHtml = (function () {
     image: "Image",
     adaptiveCard: "AdaptiveCard",
     column: "Column",
-    columnSet: "ColumnSet"
+    columnSet: "ColumnSet",
+    richTextBlock: "RichTextBlock",
+    textRun: "TextRun"
   });
   function isTextBlock(card) {
     return isCardType(card, cardTypes.textBlock);
@@ -68,8 +70,14 @@ var AdaptiveHtml = (function () {
   function isColumnSet(card) {
     return isCardType(card, cardTypes.columnSet);
   }
+  function isRichTextBlock(card) {
+    return isCardType(card, cardTypes.richTextBlock);
+  }
+  function isTextRun(card) {
+    return isCardType(card, cardTypes.textRun);
+  }
   function isCardElement(card) {
-    return isTextBlock(card) || isImage(card) || isContainer(card) || isColumn(card) || isColumnSet(card);
+    return isTextBlock(card) || isImage(card) || isContainer(card) || isColumn(card) || isColumnSet(card) || isRichTextBlock(card) || isTextRun(card);
   }
   function getTextBlocks(cardCollection) {
     return getBlocks(cardCollection, cardTypes.textBlock);
@@ -94,7 +102,7 @@ var AdaptiveHtml = (function () {
       type: cardTypes.adaptiveCard,
       body: [],
       actions: [],
-      version: '1.0'
+      version: '1.2'
     };
     var body = toArray(elements);
 
@@ -173,7 +181,23 @@ var AdaptiveHtml = (function () {
     };
     setOptions(columnSet, options);
     return columnSet;
-  } // Wrap adaptive card elements in a container
+  }
+  function createRichTextBlock(content, options) {
+    var richTextBlock = {
+      type: cardTypes.richTextBlock,
+      inlines: content
+    };
+    setOptions(richTextBlock, options);
+    return richTextBlock;
+  }
+  function createTextRun(content, options) {
+    var textRun = {
+      type: cardTypes.textRun,
+      text: content
+    };
+    setOptions(textRun, options);
+    return textRun;
+  }
 
   function wrap(elements, options) {
     elements = toArray(elements);
@@ -417,6 +441,34 @@ var AdaptiveHtml = (function () {
     filter: 'table',
     replacement: function replacement(content, node) {
       return content;
+    }
+  };
+  rules.code = {
+    filter: 'code',
+    replacement: function replacement(content, node) {
+      var guruContentAttribute = node.getAttribute('data-ghq-card-content-type');
+
+      switch (guruContentAttribute) {
+        case 'CODE_SNIPPET':
+          return createRichTextBlock(createTextRun(content, {
+            fontType: 'monospace',
+            highlight: true,
+            color: 'dark',
+            wrap: true
+          }));
+
+        case 'CODE_BLOCK':
+          var items = createRichTextBlock(createTextRun(content, {
+            fontType: 'monospace',
+            wrap: true
+          }));
+          return wrap(items, {
+            style: 'emphasis'
+          });
+
+        default:
+          return content;
+      }
     }
   };
   /* This must be the last rule */
