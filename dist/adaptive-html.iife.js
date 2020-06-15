@@ -447,27 +447,28 @@ var AdaptiveHtml = (function () {
     filter: 'code',
     replacement: function replacement(content, node) {
       var guruContentAttribute = node.getAttribute('data-ghq-card-content-type');
+      var text = content[0].text || '';
 
       switch (guruContentAttribute) {
         case 'CODE_SNIPPET':
-          return createRichTextBlock(createTextRun(content, {
+          return createRichTextBlock(toArray(createTextRun(text, {
             fontType: 'monospace',
             highlight: true,
             color: 'dark',
             wrap: true
-          }));
+          })));
 
-        case 'CODE_BLOCK':
-          var items = createRichTextBlock(createTextRun(content, {
+        case 'CODE_BLOCK_LINE':
+          var items = createRichTextBlock(toArray(createTextRun(text, {
             fontType: 'monospace',
             wrap: true
-          }));
+          })));
           return wrap(items, {
             style: 'emphasis'
           });
 
         default:
-          return content;
+          return wrap(content);
       }
     }
   };

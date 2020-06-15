@@ -245,28 +245,29 @@ rules.code = {
     filter: 'code',
     replacement: function replacement(content, node) {
         const guruContentAttribute = node.getAttribute('data-ghq-card-content-type');
+        const text = content[0].text || '';
 
         switch (guruContentAttribute) {
             case 'CODE_SNIPPET':
                 return createRichTextBlock(
-                    createTextRun(content, {
+                    toArray(createTextRun(text, {
                         fontType: 'monospace',
                         highlight: true,
                         color: 'dark',
                         wrap: true
-                    }));
-            case 'CODE_BLOCK':
+                    })));
+            case 'CODE_BLOCK_LINE':
                 const items = createRichTextBlock(
-                    createTextRun(content, {
+                    toArray(createTextRun(text, {
                         fontType: 'monospace',
                         wrap: true
-                    }));
+                    })));
     
                 return wrap(items, {
                     style: 'emphasis'
                 });
             default: 
-                return content;
+                return wrap(content);
         }
     }
 };
