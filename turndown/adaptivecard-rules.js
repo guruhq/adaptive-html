@@ -253,7 +253,6 @@ rules.code = {
                     toArray(createTextRun(text, {
                         fontType: 'monospace',
                         highlight: true,
-                        color: 'dark',
                         wrap: true
                     })));
             case 'CODE_BLOCK_LINE':

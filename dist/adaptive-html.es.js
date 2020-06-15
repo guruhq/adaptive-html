@@ -451,7 +451,6 @@ rules.code = {
         return createRichTextBlock(toArray(createTextRun(text, {
           fontType: 'monospace',
           highlight: true,
-          color: 'dark',
           wrap: true
         })));
 
