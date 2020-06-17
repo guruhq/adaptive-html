@@ -852,3 +852,77 @@ test('surfaces fallback text for table with any cell with more than max characte
         "version": "1.2"
     });
 });
+
+
+test('can handle code text', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code>normal code text</code>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                type: "TextBlock",
+                text: "normal code text",
+                wrap: true
+            }
+        ],
+        "actions": [],
+        "version": "1.2"
+    });
+});
+
+test('can handle guru code snippet', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code data-ghq-card-content-type="CODE_SNIPPET">code snippet text</code>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                type: "RichTextBlock",
+                inlines: [
+                    {
+                        type: "TextRun",
+                        fontType: "monospace",
+                        highlight: true,
+                        text: "code snippet text",
+                        wrap: true
+                    }
+                ],
+            }
+        ],
+        "actions": [],
+        "version": "1.2"
+    });
+});
+
+test('can handle guru code block', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code data-ghq-card-content-type="CODE_BLOCK_LINE">code block text</code>
+    `);
+    t.deepEqual(result, {
+        "type": "AdaptiveCard",
+        "body": [
+            {
+                "type": "Container",
+                "items": [
+                    {
+                        "type": "RichTextBlock",
+                        "inlines": [
+                            {
+                                "type": "TextRun",
+                                "text": "code block text",
+                                "fontType": "monospace",
+                                "wrap": true
+                            }
+                        ]
+                    }
+                ],
+                "style": "emphasis"
+            }
+        ],
+        "actions": [],
+        "version": "1.2"
+    });
+});
