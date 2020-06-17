@@ -105,7 +105,7 @@ function createCard(elements) {
   };
   var body = toArray(elements);
 
-  if (Array.isArray(elements) && elements.length === 1 && isContainer(elements[0])) {
+  if (Array.isArray(elements) && elements.length === 1 && isContainer(elements[0]) && Object.keys(elements[0]).length === 2) {
     body = toArray(unwrap(elements[0]));
   }
 
