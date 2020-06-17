@@ -89,6 +89,11 @@ var AdaptiveHtml = (function () {
     return getTextBlocks(cardCollection).map(function (textBlock) {
       return textBlock.text;
     }).join(' ').replace(/ +/g, ' ').trim();
+  } // container has the only two required properties (type, items)
+  // https://adaptivecards.io/explorer/Container.html
+
+  function isContainerWithRequiredProperties(element) {
+    return isContainer(element) && Object.keys(element).length === 2 && Array.isArray(element.items);
   }
 
   function setOptions(obj, options) {
@@ -104,10 +109,16 @@ var AdaptiveHtml = (function () {
       actions: [],
       version: '1.2'
     };
-    var body = toArray(elements);
+    var body = toArray(elements); // remove extra container wrapping for a single element that only has required properties (type, items)
+    // otherwise leave the container wrap since there could be additional styling
+    // https://adaptivecards.io/explorer/Container.html
 
-    if (Array.isArray(elements) && elements.length === 1 && isContainer(elements[0]) && Object.keys(elements[0]).length === 2) {
-      body = toArray(unwrap(elements[0]));
+    if (Array.isArray(elements) && elements.length === 1) {
+      var singleElement = elements[0];
+
+      if (isContainerWithRequiredProperties(singleElement)) {
+        body = toArray(unwrap(singleElement));
+      }
     }
 
     card.body = body;
