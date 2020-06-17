@@ -7,7 +7,7 @@ test('can handle empty string', t => {
         type: "AdaptiveCard",
         body: [],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -17,7 +17,7 @@ test('can handle blank tag', t => {
         type: "AdaptiveCard",
         body: [],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -41,7 +41,7 @@ test('can handle node input', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     }); 
 });
 
@@ -55,7 +55,7 @@ test('can transform text node', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -69,7 +69,7 @@ test('can transform text node with breaks in it', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -83,7 +83,7 @@ test('can handle strong/b tags', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -101,7 +101,7 @@ test('can handle img in strong/b tags', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -115,7 +115,7 @@ test('can handle em/i tags', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -133,7 +133,7 @@ test('can handle img in em/i tags', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -149,7 +149,7 @@ test('can handle p tags', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -165,7 +165,7 @@ test('can handle p tag with line breaks in it', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -255,7 +255,7 @@ test('can handle heading tags', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -269,7 +269,7 @@ test('can handle inline links (a tags)', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -287,7 +287,7 @@ test('can handle img in inline links (a tags)', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -301,7 +301,7 @@ test('can handle img tags', t => {
             altText: "This is some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -317,7 +317,7 @@ test('can handle unsupported block tag', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -331,7 +331,7 @@ test('can handle unsupported inline tag', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -361,7 +361,7 @@ test('can handle simple ordered list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -391,7 +391,7 @@ test('can handle simple unordered list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -427,7 +427,7 @@ test('can handle ordered list with nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -463,7 +463,7 @@ test('can handle unordered list with nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -493,7 +493,7 @@ test('can handle nested nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -528,7 +528,7 @@ test('can handle images in list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -558,7 +558,7 @@ test('can handle line break in list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: "1.2"
     });
 });
 
@@ -584,7 +584,7 @@ test('can handle ordered lists that starts from an index other than 1', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -622,7 +622,7 @@ test('does not wrap a container with a container', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -644,7 +644,7 @@ test('does not assign only container as body of card, it unwraps it', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -679,7 +679,7 @@ test('can handle non-text then more text (reset text)', t => {
                 }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -708,7 +708,7 @@ test('can handle images in heading', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -795,7 +795,7 @@ test('can handle table with text', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -823,7 +823,7 @@ test('surfaces fallback text for tables with more than three columns', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
 
@@ -849,6 +849,6 @@ test('surfaces fallback text for table with any cell with more than max characte
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": "1.2"
     });
 });
