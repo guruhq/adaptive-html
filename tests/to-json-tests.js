@@ -861,16 +861,16 @@ test('can handle code text', t => {
         <code>normal code text</code>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
                 type: "TextBlock",
                 text: "normal code text",
                 wrap: true
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -879,8 +879,8 @@ test('can handle guru code snippet', t => {
         <code data-ghq-card-content-type="CODE_SNIPPET">code snippet text</code>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
                 type: "RichTextBlock",
                 inlines: [
@@ -894,8 +894,8 @@ test('can handle guru code snippet', t => {
                 ],
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -904,27 +904,27 @@ test('can handle guru code block', t => {
         <code data-ghq-card-content-type="CODE_BLOCK_LINE">code block text</code>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "RichTextBlock",
-                        "inlines": [
+                        type: "RichTextBlock",
+                        inlines: [
                             {
-                                "type": "TextRun",
-                                "text": "code block text",
-                                "fontType": "monospace",
-                                "wrap": true
+                                type: "TextRun",
+                                text: "code block text",
+                                fontType: "monospace",
+                                wrap: true
                             }
                         ]
                     }
                 ],
-                "style": "emphasis"
+                style: "emphasis"
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
