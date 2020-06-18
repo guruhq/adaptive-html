@@ -116,7 +116,7 @@ function createCard(elements) {
     var singleElement = elements[0];
 
     if (isContainerWithRequiredProperties(singleElement)) {
-      body = toArray(unwrap(singleElement));
+      body = unwrap(singleElement);
     }
   }
 
