@@ -5,7 +5,9 @@ import {
     createHeadingTextBlock,
     createColumn,
     createColumnSet,
-    createImage
+    createImage,
+    createTextRun,
+    createRichTextBlock
 } from '../lib/adaptiveCardHelper';
 import {
     getTextBlocksAsString,
@@ -239,6 +241,35 @@ rules.table = {
     }
 };
 
+rules.code = {
+    filter: 'code',
+    replacement: function replacement(content, node) {
+        const guruContentAttribute = node.getAttribute('data-ghq-card-content-type');
+        const text = content[0].text || '';
+
+        switch (guruContentAttribute) {
+            case 'CODE_SNIPPET':
+                return createRichTextBlock(
+                    toArray(createTextRun(text, {
+                        fontType: 'monospace',
+                        highlight: true,
+                        wrap: true
+                    })));
+            case 'CODE_BLOCK_LINE':
+                const items = createRichTextBlock(
+                    toArray(createTextRun(text, {
+                        fontType: 'monospace',
+                        wrap: true
+                    })));
+    
+                return wrap(items, {
+                    style: 'emphasis'
+                });
+            default: 
+                return wrap(content);
+        }
+    }
+};
 
 /* This must be the last rule */
 rules.default = {

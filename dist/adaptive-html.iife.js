@@ -51,7 +51,9 @@ var AdaptiveHtml = (function () {
     image: "Image",
     adaptiveCard: "AdaptiveCard",
     column: "Column",
-    columnSet: "ColumnSet"
+    columnSet: "ColumnSet",
+    richTextBlock: "RichTextBlock",
+    textRun: "TextRun"
   });
   function isTextBlock(card) {
     return isCardType(card, cardTypes.textBlock);
@@ -68,8 +70,14 @@ var AdaptiveHtml = (function () {
   function isColumnSet(card) {
     return isCardType(card, cardTypes.columnSet);
   }
+  function isRichTextBlock(card) {
+    return isCardType(card, cardTypes.richTextBlock);
+  }
+  function isTextRun(card) {
+    return isCardType(card, cardTypes.textRun);
+  }
   function isCardElement(card) {
-    return isTextBlock(card) || isImage(card) || isContainer(card) || isColumn(card) || isColumnSet(card);
+    return isTextBlock(card) || isImage(card) || isContainer(card) || isColumn(card) || isColumnSet(card) || isRichTextBlock(card) || isTextRun(card);
   }
   function getTextBlocks(cardCollection) {
     return getBlocks(cardCollection, cardTypes.textBlock);
@@ -81,6 +89,11 @@ var AdaptiveHtml = (function () {
     return getTextBlocks(cardCollection).map(function (textBlock) {
       return textBlock.text;
     }).join(' ').replace(/ +/g, ' ').trim();
+  } // container has the only two required properties (type, items)
+  // https://adaptivecards.io/explorer/Container.html
+
+  function isContainerWithRequiredProperties(element) {
+    return isContainer(element) && Object.keys(element).length === 2 && Array.isArray(element.items);
   }
 
   function setOptions(obj, options) {
@@ -94,12 +107,18 @@ var AdaptiveHtml = (function () {
       type: cardTypes.adaptiveCard,
       body: [],
       actions: [],
-      version: '1.0'
+      version: '1.2'
     };
-    var body = toArray(elements);
+    var body = toArray(elements); // remove extra container wrapping for a single element that only has required properties (type, items)
+    // otherwise leave the container wrap since there could be additional styling
+    // https://adaptivecards.io/explorer/Container.html
 
-    if (Array.isArray(elements) && elements.length === 1 && isContainer(elements[0])) {
-      body = toArray(unwrap(elements[0]));
+    if (Array.isArray(elements) && elements.length === 1) {
+      var singleElement = elements[0];
+
+      if (isContainerWithRequiredProperties(singleElement)) {
+        body = unwrap(singleElement);
+      }
     }
 
     card.body = body;
@@ -173,7 +192,23 @@ var AdaptiveHtml = (function () {
     };
     setOptions(columnSet, options);
     return columnSet;
-  } // Wrap adaptive card elements in a container
+  }
+  function createRichTextBlock(content, options) {
+    var richTextBlock = {
+      type: cardTypes.richTextBlock,
+      inlines: content
+    };
+    setOptions(richTextBlock, options);
+    return richTextBlock;
+  }
+  function createTextRun(content, options) {
+    var textRun = {
+      type: cardTypes.textRun,
+      text: content
+    };
+    setOptions(textRun, options);
+    return textRun;
+  }
 
   function wrap(elements, options) {
     elements = toArray(elements);
@@ -417,6 +452,34 @@ var AdaptiveHtml = (function () {
     filter: 'table',
     replacement: function replacement(content, node) {
       return content;
+    }
+  };
+  rules.code = {
+    filter: 'code',
+    replacement: function replacement(content, node) {
+      var guruContentAttribute = node.getAttribute('data-ghq-card-content-type');
+      var text = content[0].text || '';
+
+      switch (guruContentAttribute) {
+        case 'CODE_SNIPPET':
+          return createRichTextBlock(toArray(createTextRun(text, {
+            fontType: 'monospace',
+            highlight: true,
+            wrap: true
+          })));
+
+        case 'CODE_BLOCK_LINE':
+          var items = createRichTextBlock(toArray(createTextRun(text, {
+            fontType: 'monospace',
+            wrap: true
+          })));
+          return wrap(items, {
+            style: 'emphasis'
+          });
+
+        default:
+          return wrap(content);
+      }
     }
   };
   /* This must be the last rule */

@@ -1,13 +1,15 @@
 var test = require('ava');
 var AdaptiveHtml = require('../dist/adaptive-html.cjs');
 
+const expectedVersion = "1.2";
+
 test('can handle empty string', t => {
     var result = AdaptiveHtml.toJSON('');
     t.deepEqual(result, {
         type: "AdaptiveCard",
         body: [],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -17,7 +19,7 @@ test('can handle blank tag', t => {
         type: "AdaptiveCard",
         body: [],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -41,7 +43,7 @@ test('can handle node input', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     }); 
 });
 
@@ -55,7 +57,7 @@ test('can transform text node', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -69,7 +71,7 @@ test('can transform text node with breaks in it', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -83,7 +85,7 @@ test('can handle strong/b tags', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -101,7 +103,7 @@ test('can handle img in strong/b tags', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -115,7 +117,7 @@ test('can handle em/i tags', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -133,7 +135,7 @@ test('can handle img in em/i tags', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -149,7 +151,7 @@ test('can handle p tags', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -165,7 +167,7 @@ test('can handle p tag with line breaks in it', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -255,7 +257,7 @@ test('can handle heading tags', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -269,7 +271,7 @@ test('can handle inline links (a tags)', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -287,7 +289,7 @@ test('can handle img in inline links (a tags)', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -301,7 +303,7 @@ test('can handle img tags', t => {
             altText: "This is some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -317,7 +319,7 @@ test('can handle unsupported block tag', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -331,7 +333,7 @@ test('can handle unsupported inline tag', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -361,7 +363,7 @@ test('can handle simple ordered list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -391,7 +393,7 @@ test('can handle simple unordered list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -427,7 +429,7 @@ test('can handle ordered list with nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -463,7 +465,7 @@ test('can handle unordered list with nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -493,7 +495,7 @@ test('can handle nested nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -528,7 +530,7 @@ test('can handle images in list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -558,7 +560,7 @@ test('can handle line break in list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -584,7 +586,7 @@ test('can handle ordered lists that starts from an index other than 1', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -622,7 +624,7 @@ test('does not wrap a container with a container', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -644,7 +646,7 @@ test('does not assign only container as body of card, it unwraps it', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -679,7 +681,7 @@ test('can handle non-text then more text (reset text)', t => {
                 }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -708,7 +710,7 @@ test('can handle images in heading', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -795,7 +797,7 @@ test('can handle table with text', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -823,7 +825,7 @@ test('surfaces fallback text for tables with more than three columns', t => {
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
     });
 });
 
@@ -849,6 +851,80 @@ test('surfaces fallback text for table with any cell with more than max characte
             }
         ],
         "actions": [],
-        "version": "1.0"
+        "version": expectedVersion
+    });
+});
+
+
+test('can handle code text', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code>normal code text</code>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "TextBlock",
+                text: "normal code text",
+                wrap: true
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('can handle guru code snippet', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code data-ghq-card-content-type="CODE_SNIPPET">code snippet text</code>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "RichTextBlock",
+                inlines: [
+                    {
+                        type: "TextRun",
+                        fontType: "monospace",
+                        highlight: true,
+                        text: "code snippet text",
+                        wrap: true
+                    }
+                ],
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('can handle guru code block', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code data-ghq-card-content-type="CODE_BLOCK_LINE">code block text</code>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "Container",
+                items: [
+                    {
+                        type: "RichTextBlock",
+                        inlines: [
+                            {
+                                type: "TextRun",
+                                text: "code block text",
+                                fontType: "monospace",
+                                wrap: true
+                            }
+                        ]
+                    }
+                ],
+                style: "emphasis"
+            }
+        ],
+        actions: [],
+        version: expectedVersion
     });
 });
