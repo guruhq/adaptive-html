@@ -383,13 +383,26 @@ var AdaptiveHtml = (function () {
       });
     }
   };
+  rules.iframe = {
+    filter: 'iframe',
+    replacement: function replacement(content, node) {
+      var fallbackText = 'To view this content, please open this card in the Guru app';
+      return wrap(createTextBlock(fallbackText), {
+        style: 'emphasis'
+      });
+    }
+  };
   rules.image = {
     filter: 'img',
     replacement: function replacement(content, node) {
-      var alt = node.alt || '';
+      var fallbackText = 'To view this image, please open this card in the Guru app';
+      var alt = node.getAttribute('alt') || '';
       var src = node.getAttribute('src') || '';
       return createImage(src, {
-        altText: alt
+        altText: alt,
+        fallbackOption: wrap(createTextBlock(fallbackText), {
+          style: 'emphasis'
+        })
       });
     }
   };
@@ -405,7 +418,9 @@ var AdaptiveHtml = (function () {
       }).items.length;
 
       if (columns > maxColumns) {
-        return createTextBlock(fallbackText);
+        return wrap(createTextBlock(fallbackText), {
+          style: 'emphasis'
+        });
       }
 
       for (var i = 0; i < rows; i++) {
@@ -414,7 +429,9 @@ var AdaptiveHtml = (function () {
         if (items.some(function (item) {
           return (item.text || '').length > maxCellCharacters;
         })) {
-          return createTextBlock(fallbackText);
+          return wrap(createTextBlock(fallbackText), {
+            style: 'emphasis'
+          });
         }
       } //transform into columns
 
