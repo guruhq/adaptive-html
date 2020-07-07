@@ -234,11 +234,11 @@ function unwrap(container) {
   return container.items || [];
 }
 
-var blockElements = ['address', 'article', 'aside', 'audio', 'blockquote', 'body', 'canvas', 'center', 'dd', 'dir', 'div', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'html', 'isindex', 'li', 'main', 'menu', 'nav', 'noframes', 'noscript', 'ol', 'output', 'p', 'pre', 'section', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul'];
+var blockElements = ['address', 'article', 'aside', 'audio', 'blockquote', 'body', 'canvas', 'center', 'dd', 'dir', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'html', 'isindex', 'li', 'main', 'menu', 'nav', 'noframes', 'noscript', 'ol', 'output', 'p', 'pre', 'section', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul'];
 function isBlock(node) {
   return blockElements.indexOf(node.nodeName.toLowerCase()) !== -1;
 }
-var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span'];
+var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span', 'iframe', 'div'];
 function isVoid(node) {
   return voidElements.indexOf(node.nodeName.toLowerCase()) !== -1;
 }
@@ -382,10 +382,25 @@ rules.strong = {
     });
   }
 };
+rules.iframe = {
+  filter: 'iframe',
+  replacement: function replacement(content, node) {
+    var fallbackText = 'To view this embedded content, please open this Card in the Guru app';
+    var guruContentAttribute = node.getAttribute('data-ghq-card-content-type') || '';
+
+    if (guruContentAttribute === "VIDEO") {
+      fallbackText = 'To view this content, please open this video in the Guru app';
+    }
+
+    return wrap(createTextBlock(fallbackText), {
+      style: 'emphasis'
+    });
+  }
+};
 rules.image = {
   filter: 'img',
   replacement: function replacement(content, node) {
-    var alt = node.alt || '';
+    var alt = node.getAttribute('alt') || '';
     var src = node.getAttribute('src') || '';
     return createImage(src, {
       altText: alt
@@ -404,7 +419,9 @@ rules.tableSection = {
     }).items.length;
 
     if (columns > maxColumns) {
-      return createTextBlock(fallbackText);
+      return wrap(createTextBlock(fallbackText), {
+        style: 'emphasis'
+      });
     }
 
     for (var i = 0; i < rows; i++) {
@@ -413,7 +430,9 @@ rules.tableSection = {
       if (items.some(function (item) {
         return (item.text || '').length > maxCellCharacters;
       })) {
-        return createTextBlock(fallbackText);
+        return wrap(createTextBlock(fallbackText), {
+          style: 'emphasis'
+        });
       }
     } //transform into columns
 
@@ -614,7 +633,7 @@ function collapseWhitespace(options) {
       prevText = node;
     } else if (node.nodeType === 1) {
       // Node.ELEMENT_NODE
-      if (isBlock(node) || node.nodeName === 'BR') {
+      if (isBlock(node) || node.nodeName === 'BR' || node.nodeName === 'DIV') {
         if (prevText) {
           prevText.data = prevText.data.replace(/ $/, '');
         }
@@ -622,7 +641,7 @@ function collapseWhitespace(options) {
         prevText = null;
         prevVoid = false;
       } else if (isVoid(node)) {
-        // Avoid trimming space around non-block, non-BR void elements.
+        // Avoid trimming space around non-block, non-BR, non-DIV void elements.
         prevText = null;
         prevVoid = true;
       }

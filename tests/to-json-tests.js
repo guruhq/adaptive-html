@@ -307,7 +307,7 @@ test('can handle img tags', t => {
     });
 });
 
-test('can handle unsupported block tag', t => {
+test('can handle div tag', t => {
     var result = AdaptiveHtml.toJSON(`<div>Testing div</div>`);
     t.deepEqual(result, {
         type: "AdaptiveCard",
@@ -323,7 +323,7 @@ test('can handle unsupported block tag', t => {
     });
 });
 
-test('can handle unsupported inline tag', t => {
+test('can handle span tag', t => {
     var result = AdaptiveHtml.toJSON(`<span>Testing span</span>`);
     t.deepEqual(result, {
         type: "AdaptiveCard",
@@ -590,7 +590,7 @@ test('can handle ordered lists that starts from an index other than 1', t => {
     });
 });
 
-test('does not wrap a container with a container', t => {
+test('handle nested div content with other content', t => {
     var result = AdaptiveHtml.toJSON(`
         <div>
             <div>
@@ -603,14 +603,9 @@ test('does not wrap a container with a container', t => {
         "type": "AdaptiveCard",
         "body": [
             {
-                "type": "Container",
-                "items": [
-                    {
-                        "type": "TextBlock",
-                        "text": "test",
-                        "wrap": true
-                    }
-                ]
+                "type": "TextBlock",
+                "text": "test",
+                "wrap": true
             },
             {
                 "type": "Container",
@@ -628,7 +623,7 @@ test('does not wrap a container with a container', t => {
     });
 });
 
-test('does not assign only container as body of card, it unwraps it', t => {
+test('handle nested div content', t => {
     var result = AdaptiveHtml.toJSON(`
         <div>
             <div>
@@ -817,13 +812,15 @@ test('surfaces fallback text for tables with more than three columns', t => {
     `);
     t.deepEqual(result, {
         "type": "AdaptiveCard",
-        "body": [
-            {
+        "body": [{
+            type: "Container",
+            style: "emphasis",
+            items: [{
                 type: "TextBlock",
                 text: "To view this table content, please open this card in the Guru app",
                 wrap: true
-            }
-        ],
+            }]
+        }],
         "actions": [],
         "version": expectedVersion
     });
@@ -843,13 +840,15 @@ test('surfaces fallback text for table with any cell with more than max characte
     `);
     t.deepEqual(result, {
         "type": "AdaptiveCard",
-        "body": [
-            {
+        "body": [{
+            type: "Container",
+            style: "emphasis",
+            items: [{
                 type: "TextBlock",
                 text: "To view this table content, please open this card in the Guru app",
                 wrap: true
-            }
-        ],
+            }]
+        }],
         "actions": [],
         "version": expectedVersion
     });
@@ -924,6 +923,43 @@ test('can handle guru code block', t => {
                 style: "emphasis"
             }
         ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('handle guru iframed video fallback message', t => {
+    var result = AdaptiveHtml.toJSON(`<iframe data-ghq-card-content-type="VIDEO"></iframe>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Container",
+            style: "emphasis",
+            items: [{
+                type: "TextBlock",
+                text: "To view this content, please open this video in the Guru app",
+                wrap: true
+            }]
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+
+test('handle nested iframe (non video) fallback message', t => {
+    var result = AdaptiveHtml.toJSON(`<div><div><iframe></iframe></div></div>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Container",
+            style: "emphasis",
+            items: [{
+                type: "TextBlock",
+                text: "To view this embedded content, please open this Card in the Guru app",
+                wrap: true
+            }]
+        }],
         actions: [],
         version: expectedVersion
     });
