@@ -1010,24 +1010,6 @@ test('can handle guru code block', t => {
     });
 });
 
-test('handle iframe with content fallback message', t => {
-    var result = AdaptiveHtml.toJSON(`<iframe>video info</iframe>`);
-    t.deepEqual(result, {
-        type: "AdaptiveCard",
-        body: [{
-            type: "Container",
-            style: "emphasis",
-            items: [{
-                type: "TextBlock",
-                text: "To view this content, please open this card in the Guru app",
-                wrap: true
-            }]
-        }],
-        actions: [],
-        version: expectedVersion
-    });
-});
-
 test('handle empty iframe fallback message', t => {
     var result = AdaptiveHtml.toJSON(`<iframe></iframe>`);
     t.deepEqual(result, {
@@ -1037,7 +1019,7 @@ test('handle empty iframe fallback message', t => {
             style: "emphasis",
             items: [{
                 type: "TextBlock",
-                text: "To view this content, please open this card in the Guru app",
+                text: "To view this content, please open this video in the Guru app",
                 wrap: true
             }]
         }],

@@ -177,7 +177,7 @@ rules.strong = {
 rules.iframe = {
     filter: 'iframe',
     replacement: function (content, node) {
-        const fallbackText = 'To view this content, please open this card in the Guru app'
+        const fallbackText = 'To view this content, please open this video in the Guru app';
         return wrap(createTextBlock(fallbackText), { style: 'emphasis' });
     }
 }
