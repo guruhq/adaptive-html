@@ -4,7 +4,7 @@ export const blockElements = [
     'figure', 'footer', 'form', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'header', 'hgroup', 'hr', 'html', 'isindex', 'li', 'main', 'menu', 'nav',
     'noframes', 'noscript', 'ol', 'output', 'p', 'pre', 'section', 'table',
-    'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul', 'iframe'
+    'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul'
 ];
 
 export function isBlock(node) {
@@ -13,7 +13,7 @@ export function isBlock(node) {
 
 export const voidElements = [
     'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
-    'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span'
+    'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span', 'iframe'
 ];
 
 export function isVoid(node) {
