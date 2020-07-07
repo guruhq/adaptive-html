@@ -100,18 +100,7 @@ test('can handle img in strong/b tags', t => {
         }, {
             type: "Image",
             url: "https://fake-image.com",
-            altText: "some alt text",
-            fallback:  {
-                type: "Container",
-                style: "emphasis",
-                items: [
-                    {
-                        text: "To view this image, please open this card in the Guru app",
-                        type: "TextBlock",
-                        wrap: true,
-                    },
-                ]
-            }
+            altText: "some alt text"
         }],
         actions: [],
         version: expectedVersion
@@ -143,18 +132,7 @@ test('can handle img in em/i tags', t => {
         }, {
             type: "Image",
             url: "https://fake-image.com",
-            altText: "some alt text",
-            fallback:  {
-                type: "Container",
-                style: "emphasis",
-                items: [
-                    {
-                        text: "To view this image, please open this card in the Guru app",
-                        type: "TextBlock",
-                        wrap: true,
-                    },
-                ]
-            }
+            altText: "some alt text"
         }],
         actions: [],
         version: expectedVersion
@@ -308,18 +286,7 @@ test('can handle img in inline links (a tags)', t => {
         }, {
             type: "Image",
             url: "https://fake-image.com",
-            altText: "some alt text",
-            fallback:  {
-                type: "Container",
-                style: "emphasis",
-                items: [
-                    {
-                        text: "To view this image, please open this card in the Guru app",
-                        type: "TextBlock",
-                        wrap: true,
-                    },
-                ]
-            }
+            altText: "some alt text"
         }],
         actions: [],
         version: expectedVersion
@@ -333,18 +300,7 @@ test('can handle img tags', t => {
         body: [{
             type: "Image",
             url: "https://fake-image.com",
-            altText: "This is some alt text",
-            fallback:  {
-                type: "Container",
-                style: "emphasis",
-                items: [
-                    {
-                        text: "To view this image, please open this card in the Guru app",
-                        type: "TextBlock",
-                        wrap: true,
-                    },
-                ]
-            }
+            altText: "This is some alt text"
         }],
         actions: [],
         version: expectedVersion
@@ -566,18 +522,7 @@ test('can handle images in list', t => {
             }, {
                 type: "Image",
                 url: "https://fake-image.com",
-                altText: "fake-alt-text",
-                fallback:  {
-                    type: "Container",
-                    style: "emphasis",
-                    items: [
-                        {
-                            text: "To view this image, please open this card in the Guru app",
-                            type: "TextBlock",
-                            wrap: true,
-                        },
-                    ]
-                }
+                altText: "fake-alt-text"
             }, {
                 type: "TextBlock",
                 text: "- List item 2",
@@ -727,18 +672,7 @@ test('can handle non-text then more text (reset text)', t => {
                 {
                         "type": "Image",
                         "url": "https://fake-image.com",
-                        "altText": "",
-                        fallback:  {
-                            type: "Container",
-                            style: "emphasis",
-                            items: [
-                                {
-                                    text: "To view this image, please open this card in the Guru app",
-                                    type: "TextBlock",
-                                    wrap: true,
-                                },
-                            ]
-                        }
+                        "altText": ""
                 },
                 {
                         "type": "TextBlock",
@@ -772,18 +706,7 @@ test('can handle images in heading', t => {
             {
                 type: "Image",
                 url: "https://fake-image.com",
-                altText: "",
-                fallback:  {
-                    type: "Container",
-                    style: "emphasis",
-                    items: [
-                        {
-                            text: "To view this image, please open this card in the Guru app",
-                            type: "TextBlock",
-                            wrap: true,
-                        },
-                    ]
-                }
+                altText: ""
             }
         ],
         "actions": [],

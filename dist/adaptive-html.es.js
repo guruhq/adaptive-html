@@ -392,14 +392,10 @@ rules.iframe = {
 rules.image = {
   filter: 'img',
   replacement: function replacement(content, node) {
-    var fallbackText = 'To view this image, please open this card in the Guru app';
     var alt = node.getAttribute('alt') || '';
     var src = node.getAttribute('src') || '';
     return createImage(src, {
-      altText: alt,
-      fallback: wrap(createTextBlock(fallbackText), {
-        style: 'emphasis'
-      })
+      altText: alt
     });
   }
 };
