@@ -603,14 +603,9 @@ test('does not wrap a container with a container', t => {
         "type": "AdaptiveCard",
         "body": [
             {
-                "type": "Container",
-                "items": [
-                    {
-                        "type": "TextBlock",
-                        "text": "test",
-                        "wrap": true
-                    }
-                ]
+                "type": "TextBlock",
+                "text": "test",
+                "wrap": true
             },
             {
                 "type": "Container",

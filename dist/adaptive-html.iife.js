@@ -628,7 +628,7 @@ var AdaptiveHtml = (function () {
         prevText = node;
       } else if (node.nodeType === 1) {
         // Node.ELEMENT_NODE
-        if (isBlock(node) || node.nodeName === 'BR') {
+        if (isBlock(node) || node.nodeName === 'BR' || node.nodeName === 'DIV') {
           if (prevText) {
             prevText.data = prevText.data.replace(/ $/, '');
           }
@@ -636,7 +636,7 @@ var AdaptiveHtml = (function () {
           prevText = null;
           prevVoid = false;
         } else if (isVoid(node)) {
-          // Avoid trimming space around non-block, non-BR void elements.
+          // Avoid trimming space around non-block, non-BR, non-DIV void elements.
           prevText = null;
           prevVoid = true;
         }
