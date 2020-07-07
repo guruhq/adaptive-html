@@ -177,7 +177,13 @@ rules.strong = {
 rules.iframe = {
     filter: 'iframe',
     replacement: function (content, node) {
-        const fallbackText = 'To view this content, please open this video in the Guru app';
+        let fallbackText = 'To view this embedded content, please open this Card in the Guru app';
+        const guruContentAttribute = node.getAttribute('data-ghq-card-content-type') || '';
+
+        if (guruContentAttribute === "VIDEO") {
+            fallbackText = 'To view this content, please open this video in the Guru app';
+        }
+
         return wrap(createTextBlock(fallbackText), { style: 'emphasis' });
     }
 }
