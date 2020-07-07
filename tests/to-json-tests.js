@@ -181,83 +181,83 @@ test('can handle heading tags', t => {
         <h6>Heading level 6</h6>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 1",
-                        "wrap": true,
-                        "size": "extraLarge",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 1",
+                        wrap: true,
+                        size: "extraLarge",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 2",
-                        "wrap": true,
-                        "size": "large",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 2",
+                        wrap: true,
+                        size: "large",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 3",
-                        "wrap": true,
-                        "size": "medium",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 3",
+                        wrap: true,
+                        size: "medium",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 4",
-                        "wrap": true,
-                        "size": "medium",
-                        "weight": "default"
+                        type: "TextBlock",
+                        text: "Heading level 4",
+                        wrap: true,
+                        size: "medium",
+                        weight: "default"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 5",
-                        "wrap": true,
-                        "size": "default",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 5",
+                        wrap: true,
+                        size: "default",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 6",
-                        "wrap": true,
-                        "size": "small",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 6",
+                        wrap: true,
+                        size: "small",
+                        weight: "bolder"
                     }
                 ]
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -572,21 +572,21 @@ test('can handle ordered lists that starts from an index other than 1', t => {
         </ol>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "TextBlock",
-                "text": "2. My start index should be 2",
-                "wrap": true
+                type: "TextBlock",
+                text: "2. My start index should be 2",
+                wrap: true
             },
             {
-                "type": "TextBlock",
-                "text": "3. My start index should be 3",
-                "wrap": true
+                type: "TextBlock",
+                text: "3. My start index should be 3",
+                wrap: true
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -600,26 +600,26 @@ test('handle nested div content with other content', t => {
         <p>test</p>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "TextBlock",
-                "text": "test",
-                "wrap": true
+                type: "TextBlock",
+                text: "test",
+                wrap: true
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "test",
-                        "wrap": true
+                        type: "TextBlock",
+                        text: "test",
+                        wrap: true
                     }
                 ]
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -632,16 +632,16 @@ test('handle nested div content', t => {
         </div>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "TextBlock",
-                "text": "test",
-                "wrap": true
+                type: "TextBlock",
+                text: "test",
+                wrap: true
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -657,26 +657,26 @@ test('can handle non-text then more text (reset text)', t => {
         </p>
     `);    
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
-                {
-                        "type": "TextBlock",
-                        "text": "_Emphasis More emphasis_",
-                        "wrap": true
-                },
-                {
-                        "type": "Image",
-                        "url": "https://fake-image.com",
-                        "altText": ""
-                },
-                {
-                        "type": "TextBlock",
-                        "text": "Now a span",
-                        "wrap": true
-                }
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "TextBlock",
+                text: "_Emphasis More emphasis_",
+                wrap: true
+            },
+            {
+                type: "Image",
+                url: "https://fake-image.com",
+                altText: ""
+            },
+            {
+                type: "TextBlock",
+                text: "Now a span",
+                wrap: true
+            }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -689,8 +689,8 @@ test('can handle images in heading', t => {
         </h1>
     `);    
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
                 type: "TextBlock",
                 text: "Heading 1 Now a span",
@@ -704,8 +704,8 @@ test('can handle images in heading', t => {
                 altText: ""
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -741,58 +741,58 @@ test('can handle table with text', t => {
         </table>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "ColumnSet",
-                "columns": [
+                type: "ColumnSet",
+                columns: [
                     {
-                        "type": "Column",
-                        "items": [
+                        type: "Column",
+                        items: [
                             {
-                                "type": "TextBlock",
-                                "text": "**text1**",
-                                "wrap": true
+                                type: "TextBlock",
+                                text: "**text1**",
+                                wrap: true
                             },
                             {
-                                "type": "TextBlock",
-                                "text": "_italics_",
-                                "wrap": true
+                                type: "TextBlock",
+                                text: "_italics_",
+                                wrap: true
                             },
                             {
-                                "type": "TextBlock",
-                                "text": "text",
-                                "wrap": true
+                                type: "TextBlock",
+                                text: "text",
+                                wrap: true
                             }
                         ],
-                        "style": "emphasis"
+                        style: "emphasis"
                     },
                     {
-                        "type": "Column",
-                        "items": [
+                        type: "Column",
+                        items: [
                             {
-                                "type": "TextBlock",
-                                "text": "**text2**",
-                                "wrap": true
+                                type: "TextBlock",
+                                text: "**text2**",
+                                wrap: true
                             },
                             {
-                                "type": "TextBlock",
-                                "text": "normal text",
-                                "wrap": true
+                                type: "TextBlock",
+                                text: "normal text",
+                                wrap: true
                             },
                             {
-                                "type": "TextBlock",
-                                "text": "text",
-                                "wrap": true
+                                type: "TextBlock",
+                                text: "text",
+                                wrap: true
                             }
                         ],
-                        "style": "emphasis"
+                        style: "emphasis"
                     }
                 ]
             }
         ],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -811,8 +811,8 @@ test('surfaces fallback text for tables with more than three columns', t => {
         </table>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [{
+        type: "AdaptiveCard",
+        body: [{
             type: "Container",
             style: "emphasis",
             items: [{
@@ -821,8 +821,8 @@ test('surfaces fallback text for tables with more than three columns', t => {
                 wrap: true
             }]
         }],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -839,8 +839,8 @@ test('surfaces fallback text for table with any cell with more than max characte
         </table>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [{
+        type: "AdaptiveCard",
+        body: [{
             type: "Container",
             style: "emphasis",
             items: [{
@@ -849,8 +849,8 @@ test('surfaces fallback text for table with any cell with more than max characte
                 wrap: true
             }]
         }],
-        "actions": [],
-        "version": expectedVersion
+        actions: [],
+        version: expectedVersion
     });
 });
 
