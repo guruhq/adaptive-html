@@ -4,7 +4,7 @@ export const blockElements = [
     'figure', 'footer', 'form', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'header', 'hgroup', 'hr', 'html', 'isindex', 'li', 'main', 'menu', 'nav',
     'noframes', 'noscript', 'ol', 'output', 'p', 'pre', 'section', 'table',
-    'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul'
+    'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul', 'iframe'
 ];
 
 export function isBlock(node) {
