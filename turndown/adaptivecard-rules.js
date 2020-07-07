@@ -185,8 +185,8 @@ rules.iframe = {
 rules.image = {
     filter: 'img',
     replacement: function (content, node) {
-        var alt = node.getAttribute('alt') || '';
-        var src = node.getAttribute('src') || '';
+        const alt = node.getAttribute('alt') || '';
+        const src = node.getAttribute('src') || '';
         return createImage(src, {
             altText: alt
         });
