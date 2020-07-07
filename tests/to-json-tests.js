@@ -100,7 +100,18 @@ test('can handle img in strong/b tags', t => {
         }, {
             type: "Image",
             url: "https://fake-image.com",
-            altText: "some alt text"
+            altText: "some alt text",
+            fallback:  {
+                type: "Container",
+                style: "emphasis",
+                items: [
+                    {
+                        text: "To view this image, please open this card in the Guru app",
+                        type: "TextBlock",
+                        wrap: true,
+                    },
+                ]
+            }
         }],
         actions: [],
         version: expectedVersion
@@ -132,7 +143,18 @@ test('can handle img in em/i tags', t => {
         }, {
             type: "Image",
             url: "https://fake-image.com",
-            altText: "some alt text"
+            altText: "some alt text",
+            fallback:  {
+                type: "Container",
+                style: "emphasis",
+                items: [
+                    {
+                        text: "To view this image, please open this card in the Guru app",
+                        type: "TextBlock",
+                        wrap: true,
+                    },
+                ]
+            }
         }],
         actions: [],
         version: expectedVersion
@@ -286,7 +308,18 @@ test('can handle img in inline links (a tags)', t => {
         }, {
             type: "Image",
             url: "https://fake-image.com",
-            altText: "some alt text"
+            altText: "some alt text",
+            fallback:  {
+                type: "Container",
+                style: "emphasis",
+                items: [
+                    {
+                        text: "To view this image, please open this card in the Guru app",
+                        type: "TextBlock",
+                        wrap: true,
+                    },
+                ]
+            }
         }],
         actions: [],
         version: expectedVersion
@@ -300,7 +333,18 @@ test('can handle img tags', t => {
         body: [{
             type: "Image",
             url: "https://fake-image.com",
-            altText: "This is some alt text"
+            altText: "This is some alt text",
+            fallback:  {
+                type: "Container",
+                style: "emphasis",
+                items: [
+                    {
+                        text: "To view this image, please open this card in the Guru app",
+                        type: "TextBlock",
+                        wrap: true,
+                    },
+                ]
+            }
         }],
         actions: [],
         version: expectedVersion
@@ -522,7 +566,18 @@ test('can handle images in list', t => {
             }, {
                 type: "Image",
                 url: "https://fake-image.com",
-                altText: "fake-alt-text"
+                altText: "fake-alt-text",
+                fallback:  {
+                    type: "Container",
+                    style: "emphasis",
+                    items: [
+                        {
+                            text: "To view this image, please open this card in the Guru app",
+                            type: "TextBlock",
+                            wrap: true,
+                        },
+                    ]
+                }
             }, {
                 type: "TextBlock",
                 text: "- List item 2",
@@ -672,7 +727,18 @@ test('can handle non-text then more text (reset text)', t => {
                 {
                         "type": "Image",
                         "url": "https://fake-image.com",
-                        "altText": ""
+                        "altText": "",
+                        fallback:  {
+                            type: "Container",
+                            style: "emphasis",
+                            items: [
+                                {
+                                    text: "To view this image, please open this card in the Guru app",
+                                    type: "TextBlock",
+                                    wrap: true,
+                                },
+                            ]
+                        }
                 },
                 {
                         "type": "TextBlock",
@@ -706,7 +772,18 @@ test('can handle images in heading', t => {
             {
                 type: "Image",
                 url: "https://fake-image.com",
-                altText: ""
+                altText: "",
+                fallback:  {
+                    type: "Container",
+                    style: "emphasis",
+                    items: [
+                        {
+                            text: "To view this image, please open this card in the Guru app",
+                            type: "TextBlock",
+                            wrap: true,
+                        },
+                    ]
+                }
             }
         ],
         "actions": [],
@@ -817,13 +894,15 @@ test('surfaces fallback text for tables with more than three columns', t => {
     `);
     t.deepEqual(result, {
         "type": "AdaptiveCard",
-        "body": [
-            {
+        "body": [{
+            type: "Container",
+            style: "emphasis",
+            items: [{
                 type: "TextBlock",
                 text: "To view this table content, please open this card in the Guru app",
                 wrap: true
-            }
-        ],
+            }]
+        }],
         "actions": [],
         "version": expectedVersion
     });
@@ -843,13 +922,15 @@ test('surfaces fallback text for table with any cell with more than max characte
     `);
     t.deepEqual(result, {
         "type": "AdaptiveCard",
-        "body": [
-            {
+        "body": [{
+            type: "Container",
+            style: "emphasis",
+            items: [{
                 type: "TextBlock",
                 text: "To view this table content, please open this card in the Guru app",
                 wrap: true
-            }
-        ],
+            }]
+        }],
         "actions": [],
         "version": expectedVersion
     });
@@ -928,3 +1009,21 @@ test('can handle guru code block', t => {
         version: expectedVersion
     });
 });
+
+test('handle iframe fallback message', t => {
+    var result = AdaptiveHtml.toJSON(`<iframe>video information</iframe>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Container",
+            style: "emphasis",
+            items: [{
+                type: "TextBlock",
+                text: "To view this content, please open this card in the Guru app",
+                wrap: true
+            }]
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+})

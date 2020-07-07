@@ -400,7 +400,7 @@ var AdaptiveHtml = (function () {
       var src = node.getAttribute('src') || '';
       return createImage(src, {
         altText: alt,
-        fallbackOption: wrap(createTextBlock(fallbackText), {
+        fallback: wrap(createTextBlock(fallbackText), {
           style: 'emphasis'
         })
       });

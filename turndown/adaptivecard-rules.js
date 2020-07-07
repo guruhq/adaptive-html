@@ -190,7 +190,7 @@ rules.image = {
         var src = node.getAttribute('src') || '';
         return createImage(src, {
             altText: alt,
-            fallbackOption: wrap(createTextBlock(fallbackText), { style: 'emphasis' })
+            fallback: wrap(createTextBlock(fallbackText), { style: 'emphasis' })
         });
     }
 };
