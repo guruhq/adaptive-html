@@ -307,7 +307,7 @@ test('can handle img tags', t => {
     });
 });
 
-test('can handle unsupported block tag', t => {
+test('can handle div tag', t => {
     var result = AdaptiveHtml.toJSON(`<div>Testing div</div>`);
     t.deepEqual(result, {
         type: "AdaptiveCard",
@@ -323,7 +323,7 @@ test('can handle unsupported block tag', t => {
     });
 });
 
-test('can handle unsupported inline tag', t => {
+test('can handle span tag', t => {
     var result = AdaptiveHtml.toJSON(`<span>Testing span</span>`);
     t.deepEqual(result, {
         type: "AdaptiveCard",
@@ -590,7 +590,7 @@ test('can handle ordered lists that starts from an index other than 1', t => {
     });
 });
 
-test('does not wrap a container with a container', t => {
+test('handle nested div content with other content', t => {
     var result = AdaptiveHtml.toJSON(`
         <div>
             <div>
@@ -623,7 +623,7 @@ test('does not wrap a container with a container', t => {
     });
 });
 
-test('does not assign only container as body of card, it unwraps it', t => {
+test('handle nested div content', t => {
     var result = AdaptiveHtml.toJSON(`
         <div>
             <div>
