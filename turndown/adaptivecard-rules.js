@@ -181,10 +181,10 @@ rules.iframe = {
         const guruContentAttribute = node.getAttribute('data-ghq-card-content-type') || '';
 
         if (guruContentAttribute === "VIDEO") {
-            fallbackText = 'To view this content, please open this video in the Guru app';
+            fallbackText = 'To view this video content, please open this Card in the Guru app';
         }
 
-        return wrap(createTextBlock(fallbackText), { style: 'emphasis' });
+        return wrap(createTextBlock(fallbackText), { style: 'attention' });
     }
 }
 
@@ -202,20 +202,20 @@ rules.image = {
 rules.tableSection = {
     filter: ['thead', 'tbody', 'tfoot'],
     replacement: function replacement(content, node) {
-        const fallbackText = 'To view this table content, please open this card in the Guru app';
+        const fallbackText = 'To view this table content, please open this Card in the Guru app';
         const maxColumns = 3;
         const maxCellCharacters = 100;
         const rows = content.length;
         const columns = (content[0] || { items: []}).items.length;
 
         if (columns > maxColumns) {
-            return wrap(createTextBlock(fallbackText), { style: 'emphasis' });
+            return wrap(createTextBlock(fallbackText), { style: 'attention' });
         }
 
         for (var i = 0; i < rows; i++) {
             let items = content[i].items || [];
             if (items.some((item) => (item.text || '').length > maxCellCharacters))  {
-              return wrap(createTextBlock(fallbackText), { style: 'emphasis' });
+              return wrap(createTextBlock(fallbackText), { style: 'attention' });
             }
         }
   
