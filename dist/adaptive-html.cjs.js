@@ -385,11 +385,11 @@ rules.strong = {
 rules.iframe = {
   filter: 'iframe',
   replacement: function replacement(content, node) {
-    var fallbackText = 'To view this embedded content, please open this Card in the Guru app';
+    var fallbackText = 'To view this embedded content, please open this Card in the Guru app.';
     var guruContentAttribute = node.getAttribute('data-ghq-card-content-type') || '';
 
     if (guruContentAttribute === "VIDEO") {
-      fallbackText = 'To view this video content, please open this Card in the Guru app';
+      fallbackText = 'To view this video content, please open this Card in the Guru app.';
     }
 
     return wrap(createTextBlock(fallbackText), {
@@ -410,7 +410,7 @@ rules.image = {
 rules.tableSection = {
   filter: ['thead', 'tbody', 'tfoot'],
   replacement: function replacement(content, node) {
-    var fallbackText = 'To view this table content, please open this Card in the Guru app';
+    var fallbackText = 'To view this table content, please open this Card in the Guru app.';
     var maxColumns = 3;
     var maxCellCharacters = 100;
     var rows = content.length;

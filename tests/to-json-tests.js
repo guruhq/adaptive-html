@@ -817,7 +817,7 @@ test('surfaces fallback text for tables with more than three columns', t => {
             style: "attention",
             items: [{
                 type: "TextBlock",
-                text: "To view this table content, please open this Card in the Guru app",
+                text: "To view this table content, please open this Card in the Guru app.",
                 wrap: true
             }]
         }],
@@ -845,7 +845,7 @@ test('surfaces fallback text for table with any cell with more than max characte
             style: "attention",
             items: [{
                 type: "TextBlock",
-                text: "To view this table content, please open this Card in the Guru app",
+                text: "To view this table content, please open this Card in the Guru app.",
                 wrap: true
             }]
         }],
@@ -937,7 +937,7 @@ test('handle guru iframed video fallback message', t => {
             style: "attention",
             items: [{
                 type: "TextBlock",
-                text: "To view this video content, please open this Card in the Guru app",
+                text: "To view this video content, please open this Card in the Guru app.",
                 wrap: true
             }]
         }],
@@ -956,7 +956,7 @@ test('handle nested iframe (non video) fallback message', t => {
             style: "attention",
             items: [{
                 type: "TextBlock",
-                text: "To view this embedded content, please open this Card in the Guru app",
+                text: "To view this embedded content, please open this Card in the Guru app.",
                 wrap: true
             }]
         }],

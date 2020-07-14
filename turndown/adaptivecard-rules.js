@@ -177,11 +177,11 @@ rules.strong = {
 rules.iframe = {
     filter: 'iframe',
     replacement: function (content, node) {
-        let fallbackText = 'To view this embedded content, please open this Card in the Guru app';
+        let fallbackText = 'To view this embedded content, please open this Card in the Guru app.';
         const guruContentAttribute = node.getAttribute('data-ghq-card-content-type') || '';
 
         if (guruContentAttribute === "VIDEO") {
-            fallbackText = 'To view this video content, please open this Card in the Guru app';
+            fallbackText = 'To view this video content, please open this Card in the Guru app.';
         }
 
         return wrap(createTextBlock(fallbackText), { style: 'attention' });
@@ -202,7 +202,7 @@ rules.image = {
 rules.tableSection = {
     filter: ['thead', 'tbody', 'tfoot'],
     replacement: function replacement(content, node) {
-        const fallbackText = 'To view this table content, please open this Card in the Guru app';
+        const fallbackText = 'To view this table content, please open this Card in the Guru app.';
         const maxColumns = 3;
         const maxCellCharacters = 100;
         const rows = content.length;
