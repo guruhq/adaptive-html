@@ -139,6 +139,44 @@ test('can handle img in em/i tags', t => {
     });
 });
 
+
+test('can handle img in empty span and p tags', t => {
+    var result = AdaptiveHtml.toJSON(` <p><span><img alt="some alt text" src="https://fake-image.com"/></span></p>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "Image",
+                url: "https://fake-image.com",
+                altText: "some alt text"
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('can handle img in empty span and non empty p tag', t => {
+    var result = AdaptiveHtml.toJSON(`<p>inline text<span><img alt="file name" src="https://another-fake-image.com"/></span></p>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "TextBlock",
+                text: "inline text",
+                wrap: true,
+            },
+            {
+                type: "Image",
+                url: "https://another-fake-image.com",
+                altText: "file name"
+            },
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
 test('can handle p tags', t => {
     var result = AdaptiveHtml.toJSON('<p>This is a paragraph</p>');
     t.deepEqual(result, {

@@ -259,7 +259,7 @@ rules.blank = {
       });
     }
 
-    return null;
+    return content;
   }
 };
 rules.text = {
