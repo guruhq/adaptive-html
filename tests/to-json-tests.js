@@ -139,6 +139,21 @@ test('can handle img in em/i tags', t => {
     });
 });
 
+
+test('can handle img in span and p tags', t => {
+    var result = AdaptiveHtml.toJSON('<p><span><img alt="some alt text" src="https://fake-image.com"/></span></p>');
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Image",
+            url: "https://fake-image.com",
+            altText: "some alt text"
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
 test('can handle p tags', t => {
     var result = AdaptiveHtml.toJSON('<p>This is a paragraph</p>');
     t.deepEqual(result, {

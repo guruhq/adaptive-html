@@ -262,7 +262,7 @@ var AdaptiveHtml = (function () {
         });
       }
 
-      return null;
+      return content;
     }
   };
   rules.text = {

@@ -42,7 +42,7 @@ rules.blank = {
                 return node.textContent;
             });
         }
-        return null;
+        return content;
     }
 };
 
