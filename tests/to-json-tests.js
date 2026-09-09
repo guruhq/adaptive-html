@@ -698,8 +698,12 @@ test('can handle non-text then more text (reset text)', t => {
         type: "AdaptiveCard",
         body: [
             {
+                // The em has trailing whitespace in the source, and that is now
+                // re-emitted outside the markers so it can separate the em from
+                // whatever follows. Here an image interrupts, so the space ends
+                // up trailing the block. It has no effect on rendering.
                 type: "TextBlock",
-                text: "_Emphasis More emphasis_",
+                text: "_Emphasis More emphasis_ ",
                 wrap: true
             },
             {
@@ -997,6 +1001,62 @@ test('handle nested iframe (non video) fallback message', t => {
                 text: "To view this embedded content, please open this Card in the Guru app.",
                 wrap: true
             }]
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+/**
+ * Flanking whitespace around inline markers.
+ *
+ * getTextBlocksAsString() trims, so wrapping rules used to emit "**Label:**"
+ * for "<strong>Label: </strong>" and the space that separated it from the next
+ * text was lost, joining the words. Latent for years: xmldom 0.9.10's
+ * Text.data setter never wrote through, which made collapse-whitespace a no-op
+ * and left the separator sitting in a neighbouring text node. Fixing that
+ * setter in xmldom 0.9.12 exposed this. See guruhq/MS-Teams-Integration
+ * sc-161782.
+ */
+const flankingWhitespaceCases = [
+    ['<p><strong>Label: </strong>value</p>', '**Label:** value'],
+    // Leading whitespace matters mid-block, but is meaningless at the start of
+    // a block, where the surrounding trim drops it.
+    ['<p>y<strong> leading</strong>x</p>', 'y **leading**x'],
+    ['<p><strong> leading</strong>x</p>', '**leading**x'],
+    ['<p>lead <strong>bold</strong> tail</p>', 'lead **bold** tail'],
+    ['<p><strong>bold</strong> tail</p>', '**bold** tail'],
+    ['<p>lead <strong>bold</strong></p>', 'lead **bold**'],
+    ['<p><strong>tight</strong></p>', '**tight**'],
+    ['<p><em>word </em>next</p>', '_word_ next'],
+    ['<p><strong> [X] </strong> emoji</p>', '**[X]** emoji'],
+    ['<p><a href="http://e.com">link </a>after</p>', '[link](http://e.com) after'],
+    ['<p><strong>A</strong><strong>B</strong></p>', '**A****B**']
+];
+
+flankingWhitespaceCases.forEach(([html, expected]) => {
+    test(`preserves flanking whitespace: ${html}`, t => {
+        var result = AdaptiveHtml.toJSON(html);
+        t.deepEqual(result, {
+            type: "AdaptiveCard",
+            body: [{
+                type: "TextBlock",
+                text: expected,
+                wrap: true
+            }],
+            actions: [],
+            version: expectedVersion
+        });
+    });
+});
+
+test('whitespace-only emphasis yields no markers', t => {
+    var result = AdaptiveHtml.toJSON('<p>a<strong> </strong>b</p>');
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "TextBlock",
+            text: "a b",
+            wrap: true
         }],
         actions: [],
         version: expectedVersion
