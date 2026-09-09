@@ -320,18 +320,19 @@ function handleTextEffects(contentCollection, textFunc) {
  * "**Label:**value" instead of "**Label:** value".
  *
  * This mirrors turndown's flankingWhitespace handling, which this fork dropped.
- *
- * Whitespace-only content yields an empty string rather than a bare pair of
- * markers, matching turndown.
  */
 function handleWrappedTextEffects(contentCollection, textFunc) {
     var nonText = getNonTextBlocks(contentCollection) || [];
     var raw = getTextBlocksAsRawString(contentCollection) || '';
     var text = raw.trim();
-    if (text && typeof textFunc === 'function') {
-        text = (/^\s/.test(raw) ? ' ' : '') +
-            textFunc(text) +
-            (/\s$/.test(raw) ? ' ' : '');
+    if (typeof textFunc === 'function') {
+        // Only pad when there is text to flank. Content that is empty or all
+        // whitespace goes through textFunc untouched, exactly as it did before,
+        // so this helper differs from handleTextEffects in the flanking
+        // whitespace and nothing else.
+        var leading = text && /^\s/.test(raw) ? ' ' : '';
+        var trailing = text && /\s$/.test(raw) ? ' ' : '';
+        text = leading + textFunc(text) + trailing;
     }
     return {
         text,

@@ -1049,7 +1049,13 @@ flankingWhitespaceCases.forEach(([html, expected]) => {
     });
 });
 
-test('whitespace-only emphasis yields no markers', t => {
+/**
+ * Guard, not a consequence of the flanking-whitespace change: whitespace-only
+ * strong/em never reaches the emphasis rule, because rules.blank matches first
+ * (its filter excludes only a/th/td). This asserts the flanking change did not
+ * accidentally start emitting bare markers here.
+ */
+test('whitespace-only emphasis is handled by the blank rule, not the marker rules', t => {
     var result = AdaptiveHtml.toJSON('<p>a<strong> </strong>b</p>');
     t.deepEqual(result, {
         type: "AdaptiveCard",
@@ -1057,6 +1063,31 @@ test('whitespace-only emphasis yields no markers', t => {
             type: "TextBlock",
             text: "a b",
             wrap: true
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+/**
+ * A link with no text of its own keeps its pre-existing output. rules.blank
+ * excludes 'a', so unlike strong/em these do reach the marker rule with empty
+ * content, and the flanking-whitespace change deliberately leaves that alone.
+ * "[](url)" is not useful output, but fixing it means giving the Image a
+ * selectAction, which is a separate change.
+ */
+test('image-only link keeps its existing empty-marker output', t => {
+    var result = AdaptiveHtml.toJSON('<a href="https://google.com"><img alt="a" src="https://fake-image.com" /></a>');
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "TextBlock",
+            text: "[](https://google.com)",
+            wrap: true
+        }, {
+            type: "Image",
+            url: "https://fake-image.com",
+            altText: "a"
         }],
         actions: [],
         version: expectedVersion
