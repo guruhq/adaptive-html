@@ -84,10 +84,18 @@ function getTextBlocks(cardCollection) {
 function getNonTextBlocks(cardCollection) {
   return getBlocks(cardCollection, [cardTypes.image, cardTypes.container]);
 }
-function getTextBlocksAsString(cardCollection) {
+/**
+ * Like getTextBlocksAsString, but without the trim, so callers that wrap the
+ * text in markers can tell whether it had leading or trailing whitespace.
+ */
+
+function getTextBlocksAsRawString(cardCollection) {
   return getTextBlocks(cardCollection).map(function (textBlock) {
     return textBlock.text;
-  }).join(' ').replace(/ +/g, ' ').trim();
+  }).join(' ').replace(/ +/g, ' ');
+}
+function getTextBlocksAsString(cardCollection) {
+  return getTextBlocksAsRawString(cardCollection).trim();
 } // container has the only two required properties (type, items)
 // https://adaptivecards.io/explorer/Container.html
 
@@ -361,7 +369,7 @@ rules.inlineLink = {
   },
   replacement: function replacement(content, node) {
     var href = node.getAttribute('href');
-    return handleTextEffects(content, function (text) {
+    return handleWrappedTextEffects(content, function (text) {
       return "[".concat(text, "](").concat(href, ")");
     });
   }
@@ -369,7 +377,7 @@ rules.inlineLink = {
 rules.emphasis = {
   filter: ['em', 'i'],
   replacement: function replacement(content, node) {
-    return handleTextEffects(content, function (text) {
+    return handleWrappedTextEffects(content, function (text) {
       return "_".concat(text, "_");
     });
   }
@@ -377,7 +385,7 @@ rules.emphasis = {
 rules.strong = {
   filter: ['strong', 'b'],
   replacement: function replacement(content, node) {
-    return handleTextEffects(content, function (text) {
+    return handleWrappedTextEffects(content, function (text) {
       return "**".concat(text, "**");
     });
   }
@@ -521,6 +529,40 @@ function handleTextEffects(contentCollection, textFunc) {
 
   if (typeof textFunc === 'function') {
     text = textFunc(text);
+  }
+
+  return {
+    text: text,
+    nonText: nonText
+  };
+}
+/**
+ * handleTextEffects for rules that wrap their content in markers.
+ *
+ * Markdown-style markers do not apply across a leading or trailing space, so
+ * the marker has to sit against the text and any flanking whitespace has to be
+ * re-emitted outside it. Without this, the trim() inside
+ * getTextBlocksAsString() silently swallows the separator and the wrapped text
+ * runs into its neighbour: "<strong>Label: </strong>value" would serialize as
+ * "**Label:**value" instead of "**Label:** value".
+ *
+ * This mirrors turndown's flankingWhitespace handling, which this fork dropped.
+ */
+
+
+function handleWrappedTextEffects(contentCollection, textFunc) {
+  var nonText = getNonTextBlocks(contentCollection) || [];
+  var raw = getTextBlocksAsRawString(contentCollection) || '';
+  var text = raw.trim();
+
+  if (typeof textFunc === 'function') {
+    // Only pad when there is text to flank. Content that is empty or all
+    // whitespace goes through textFunc untouched, exactly as it did before,
+    // so this helper differs from handleTextEffects in the flanking
+    // whitespace and nothing else.
+    var leading = text && /^\s/.test(raw) ? ' ' : '';
+    var trailing = text && /\s$/.test(raw) ? ' ' : '';
+    text = leading + textFunc(text) + trailing;
   }
 
   return {

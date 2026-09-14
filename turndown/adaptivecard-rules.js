@@ -11,6 +11,7 @@ import {
 } from '../lib/adaptiveCardHelper';
 import {
     getTextBlocksAsString,
+    getTextBlocksAsRawString,
     getNonTextBlocks,
     isTextBlock,
     cardTypes
@@ -150,7 +151,7 @@ rules.inlineLink = {
     },
     replacement: function (content, node) {
         var href = node.getAttribute('href');
-        return handleTextEffects(content, function (text) {
+        return handleWrappedTextEffects(content, function (text) {
             return `[${text}](${href})`;
         });
     }
@@ -159,7 +160,7 @@ rules.inlineLink = {
 rules.emphasis = {
     filter: ['em', 'i'],
     replacement: function (content, node) {
-        return handleTextEffects(content, function (text) {
+        return handleWrappedTextEffects(content, function (text) {
             return `_${text}_`;
         });
     }
@@ -168,7 +169,7 @@ rules.emphasis = {
 rules.strong = {
     filter: ['strong', 'b'],
     replacement: function (content, node) {
-        return handleTextEffects(content, function (text) {
+        return handleWrappedTextEffects(content, function (text) {
             return `**${text}**`;
         });
     }
@@ -301,6 +302,37 @@ function handleTextEffects(contentCollection, textFunc) {
     var text = getTextBlocksAsString(contentCollection) || '';
     if (typeof textFunc === 'function') {
         text = textFunc(text);
+    }
+    return {
+        text,
+        nonText
+    };
+}
+
+/**
+ * handleTextEffects for rules that wrap their content in markers.
+ *
+ * Markdown-style markers do not apply across a leading or trailing space, so
+ * the marker has to sit against the text and any flanking whitespace has to be
+ * re-emitted outside it. Without this, the trim() inside
+ * getTextBlocksAsString() silently swallows the separator and the wrapped text
+ * runs into its neighbour: "<strong>Label: </strong>value" would serialize as
+ * "**Label:**value" instead of "**Label:** value".
+ *
+ * This mirrors turndown's flankingWhitespace handling, which this fork dropped.
+ */
+function handleWrappedTextEffects(contentCollection, textFunc) {
+    var nonText = getNonTextBlocks(contentCollection) || [];
+    var raw = getTextBlocksAsRawString(contentCollection) || '';
+    var text = raw.trim();
+    if (typeof textFunc === 'function') {
+        // Only pad when there is text to flank. Content that is empty or all
+        // whitespace goes through textFunc untouched, exactly as it did before,
+        // so this helper differs from handleTextEffects in the flanking
+        // whitespace and nothing else.
+        var leading = text && /^\s/.test(raw) ? ' ' : '';
+        var trailing = text && /\s$/.test(raw) ? ' ' : '';
+        text = leading + textFunc(text) + trailing;
     }
     return {
         text,
