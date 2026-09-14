@@ -80,6 +80,7 @@ import AdaptiveHtml from './adaptive-html/dist/adaptive-html.es';
 - em, i
 - strong, b
 - img
+- table, thead, tbody, tfoot, th, td, tr
 
 The default replacement for tags not listed above depends on whether the tag refers to a [block](https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements) or [inline](https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements#Elements) level HTML element.
 

@@ -1,13 +1,15 @@
 var test = require('ava');
 var AdaptiveHtml = require('../dist/adaptive-html.cjs');
 
+const expectedVersion = "1.2";
+
 test('can handle empty string', t => {
     var result = AdaptiveHtml.toJSON('');
     t.deepEqual(result, {
         type: "AdaptiveCard",
         body: [],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -17,7 +19,7 @@ test('can handle blank tag', t => {
         type: "AdaptiveCard",
         body: [],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -41,7 +43,7 @@ test('can handle node input', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     }); 
 });
 
@@ -55,7 +57,7 @@ test('can transform text node', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -69,7 +71,7 @@ test('can transform text node with breaks in it', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -83,7 +85,7 @@ test('can handle strong/b tags', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -101,7 +103,7 @@ test('can handle img in strong/b tags', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -115,7 +117,7 @@ test('can handle em/i tags', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -133,7 +135,45 @@ test('can handle img in em/i tags', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
+    });
+});
+
+
+test('can handle img in empty span and p tags', t => {
+    var result = AdaptiveHtml.toJSON(` <p><span><img alt="some alt text" src="https://fake-image.com"/></span></p>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "Image",
+                url: "https://fake-image.com",
+                altText: "some alt text"
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('can handle img in empty span and non empty p tag', t => {
+    var result = AdaptiveHtml.toJSON(`<p>inline text<span><img alt="file name" src="https://another-fake-image.com"/></span></p>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "TextBlock",
+                text: "inline text",
+                wrap: true,
+            },
+            {
+                type: "Image",
+                url: "https://another-fake-image.com",
+                altText: "file name"
+            },
+        ],
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -149,7 +189,7 @@ test('can handle p tags', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -165,7 +205,7 @@ test('can handle p tag with line breaks in it', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -179,83 +219,83 @@ test('can handle heading tags', t => {
         <h6>Heading level 6</h6>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 1",
-                        "wrap": true,
-                        "size": "extraLarge",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 1",
+                        wrap: true,
+                        size: "extraLarge",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 2",
-                        "wrap": true,
-                        "size": "large",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 2",
+                        wrap: true,
+                        size: "large",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 3",
-                        "wrap": true,
-                        "size": "medium",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 3",
+                        wrap: true,
+                        size: "medium",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 4",
-                        "wrap": true,
-                        "size": "medium",
-                        "weight": "default"
+                        type: "TextBlock",
+                        text: "Heading level 4",
+                        wrap: true,
+                        size: "medium",
+                        weight: "default"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 5",
-                        "wrap": true,
-                        "size": "default",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 5",
+                        wrap: true,
+                        size: "default",
+                        weight: "bolder"
                     }
                 ]
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "Heading level 6",
-                        "wrap": true,
-                        "size": "small",
-                        "weight": "bolder"
+                        type: "TextBlock",
+                        text: "Heading level 6",
+                        wrap: true,
+                        size: "small",
+                        weight: "bolder"
                     }
                 ]
             }
         ],
-        "actions": [],
-        "version": "1.0"
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -269,7 +309,7 @@ test('can handle inline links (a tags)', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -287,7 +327,7 @@ test('can handle img in inline links (a tags)', t => {
             altText: "some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -301,11 +341,11 @@ test('can handle img tags', t => {
             altText: "This is some alt text"
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
-test('can handle unsupported block tag', t => {
+test('can handle div tag', t => {
     var result = AdaptiveHtml.toJSON(`<div>Testing div</div>`);
     t.deepEqual(result, {
         type: "AdaptiveCard",
@@ -317,11 +357,11 @@ test('can handle unsupported block tag', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
-test('can handle unsupported inline tag', t => {
+test('can handle span tag', t => {
     var result = AdaptiveHtml.toJSON(`<span>Testing span</span>`);
     t.deepEqual(result, {
         type: "AdaptiveCard",
@@ -331,7 +371,7 @@ test('can handle unsupported inline tag', t => {
             wrap: true
         }],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -361,7 +401,7 @@ test('can handle simple ordered list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -391,7 +431,7 @@ test('can handle simple unordered list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -427,7 +467,7 @@ test('can handle ordered list with nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -463,7 +503,7 @@ test('can handle unordered list with nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -493,7 +533,7 @@ test('can handle nested nested list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -528,7 +568,7 @@ test('can handle images in list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -558,7 +598,7 @@ test('can handle line break in list', t => {
             }
         ],
         actions: [],
-        version: "1.0"
+        version: expectedVersion
     });
 });
 
@@ -570,25 +610,25 @@ test('can handle ordered lists that starts from an index other than 1', t => {
         </ol>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "TextBlock",
-                "text": "2. My start index should be 2",
-                "wrap": true
+                type: "TextBlock",
+                text: "2. My start index should be 2",
+                wrap: true
             },
             {
-                "type": "TextBlock",
-                "text": "3. My start index should be 3",
-                "wrap": true
+                type: "TextBlock",
+                text: "3. My start index should be 3",
+                wrap: true
             }
         ],
-        "actions": [],
-        "version": "1.0"
+        actions: [],
+        version: expectedVersion
     });
 });
 
-test('does not wrap a container with a container', t => {
+test('handle nested div content with other content', t => {
     var result = AdaptiveHtml.toJSON(`
         <div>
             <div>
@@ -598,35 +638,30 @@ test('does not wrap a container with a container', t => {
         <p>test</p>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "Container",
-                "items": [
-                    {
-                        "type": "TextBlock",
-                        "text": "test",
-                        "wrap": true
-                    }
-                ]
+                type: "TextBlock",
+                text: "test",
+                wrap: true
             },
             {
-                "type": "Container",
-                "items": [
+                type: "Container",
+                items: [
                     {
-                        "type": "TextBlock",
-                        "text": "test",
-                        "wrap": true
+                        type: "TextBlock",
+                        text: "test",
+                        wrap: true
                     }
                 ]
             }
         ],
-        "actions": [],
-        "version": "1.0"
+        actions: [],
+        version: expectedVersion
     });
 });
 
-test('does not assign only container as body of card, it unwraps it', t => {
+test('handle nested div content', t => {
     var result = AdaptiveHtml.toJSON(`
         <div>
             <div>
@@ -635,16 +670,16 @@ test('does not assign only container as body of card, it unwraps it', t => {
         </div>
     `);
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
-                "type": "TextBlock",
-                "text": "test",
-                "wrap": true
+                type: "TextBlock",
+                text: "test",
+                wrap: true
             }
         ],
-        "actions": [],
-        "version": "1.0"
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -660,26 +695,30 @@ test('can handle non-text then more text (reset text)', t => {
         </p>
     `);    
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
-                {
-                        "type": "TextBlock",
-                        "text": "_Emphasis More emphasis_",
-                        "wrap": true
-                },
-                {
-                        "type": "Image",
-                        "url": "https://fake-image.com",
-                        "altText": ""
-                },
-                {
-                        "type": "TextBlock",
-                        "text": "Now a span",
-                        "wrap": true
-                }
+        type: "AdaptiveCard",
+        body: [
+            {
+                // The em has trailing whitespace in the source, and that is now
+                // re-emitted outside the markers so it can separate the em from
+                // whatever follows. Here an image interrupts, so the space ends
+                // up trailing the block. It has no effect on rendering.
+                type: "TextBlock",
+                text: "_Emphasis More emphasis_ ",
+                wrap: true
+            },
+            {
+                type: "Image",
+                url: "https://fake-image.com",
+                altText: ""
+            },
+            {
+                type: "TextBlock",
+                text: "Now a span",
+                wrap: true
+            }
         ],
-        "actions": [],
-        "version": "1.0"
+        actions: [],
+        version: expectedVersion
     });
 });
 
@@ -692,8 +731,8 @@ test('can handle images in heading', t => {
         </h1>
     `);    
     t.deepEqual(result, {
-        "type": "AdaptiveCard",
-        "body": [
+        type: "AdaptiveCard",
+        body: [
             {
                 type: "TextBlock",
                 text: "Heading 1 Now a span",
@@ -707,7 +746,350 @@ test('can handle images in heading', t => {
                 altText: ""
             }
         ],
-        "actions": [],
-        "version": "1.0"
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('can handle table with text', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>text1</strong>
+                    </td>
+                    <td>
+                        <strong>text2</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <em>italics</em>
+                    </td>
+                    <td>
+                        normal text
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        text
+                    </td>
+                    <td>
+                        text
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "ColumnSet",
+                columns: [
+                    {
+                        type: "Column",
+                        items: [
+                            {
+                                type: "TextBlock",
+                                text: "**text1**",
+                                wrap: true
+                            },
+                            {
+                                type: "TextBlock",
+                                text: "_italics_",
+                                wrap: true
+                            },
+                            {
+                                type: "TextBlock",
+                                text: "text",
+                                wrap: true
+                            }
+                        ],
+                        style: "emphasis"
+                    },
+                    {
+                        type: "Column",
+                        items: [
+                            {
+                                type: "TextBlock",
+                                text: "**text2**",
+                                wrap: true
+                            },
+                            {
+                                type: "TextBlock",
+                                text: "normal text",
+                                wrap: true
+                            },
+                            {
+                                type: "TextBlock",
+                                text: "text",
+                                wrap: true
+                            }
+                        ],
+                        style: "emphasis"
+                    }
+                ]
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('surfaces fallback text for tables with more than three columns', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                    <td>text</td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Container",
+            style: "attention",
+            items: [{
+                type: "TextBlock",
+                text: "To view this table content, please open this Card in the Guru app.",
+                wrap: true
+            }]
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('surfaces fallback text for table with any cell with more than max character count', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <table>
+            <tbody>
+                <tr>
+                    <td>525221095099885725300239130286978126745863786264859982756838656589870791324251307631085496719063267266840984846410304693</td>
+                    <td>text</td>
+                    <td>text</td>
+                </tr>
+            </tbody>
+        </table>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Container",
+            style: "attention",
+            items: [{
+                type: "TextBlock",
+                text: "To view this table content, please open this Card in the Guru app.",
+                wrap: true
+            }]
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+
+test('can handle code text', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code>normal code text</code>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "TextBlock",
+                text: "normal code text",
+                wrap: true
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('can handle guru code snippet', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code data-ghq-card-content-type="CODE_SNIPPET">code snippet text</code>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "RichTextBlock",
+                inlines: [
+                    {
+                        type: "TextRun",
+                        fontType: "monospace",
+                        highlight: true,
+                        text: "code snippet text",
+                        wrap: true
+                    }
+                ],
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('can handle guru code block', t => {
+    var result = AdaptiveHtml.toJSON(`
+        <code data-ghq-card-content-type="CODE_BLOCK_LINE">code block text</code>
+    `);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [
+            {
+                type: "Container",
+                items: [
+                    {
+                        type: "RichTextBlock",
+                        inlines: [
+                            {
+                                type: "TextRun",
+                                text: "code block text",
+                                fontType: "monospace",
+                                wrap: true
+                            }
+                        ]
+                    }
+                ],
+                style: "emphasis"
+            }
+        ],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+test('handle guru iframed video fallback message', t => {
+    var result = AdaptiveHtml.toJSON(`<iframe data-ghq-card-content-type="VIDEO"></iframe>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Container",
+            style: "attention",
+            items: [{
+                type: "TextBlock",
+                text: "To view this video content, please open this Card in the Guru app.",
+                wrap: true
+            }]
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+
+test('handle nested iframe (non video) fallback message', t => {
+    var result = AdaptiveHtml.toJSON(`<div><div><iframe></iframe></div></div>`);
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "Container",
+            style: "attention",
+            items: [{
+                type: "TextBlock",
+                text: "To view this embedded content, please open this Card in the Guru app.",
+                wrap: true
+            }]
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+/**
+ * Flanking whitespace around inline markers.
+ *
+ * getTextBlocksAsString() trims, so wrapping rules used to emit "**Label:**"
+ * for "<strong>Label: </strong>" and the space that separated it from the next
+ * text was lost, joining the words. Latent for years: xmldom 0.9.10's
+ * Text.data setter never wrote through, which made collapse-whitespace a no-op
+ * and left the separator sitting in a neighbouring text node. Fixing that
+ * setter in xmldom 0.9.12 exposed this. See guruhq/MS-Teams-Integration
+ * sc-161782.
+ */
+const flankingWhitespaceCases = [
+    ['<p><strong>Label: </strong>value</p>', '**Label:** value'],
+    // Leading whitespace matters mid-block, but is meaningless at the start of
+    // a block, where the surrounding trim drops it.
+    ['<p>y<strong> leading</strong>x</p>', 'y **leading**x'],
+    ['<p><strong> leading</strong>x</p>', '**leading**x'],
+    ['<p>lead <strong>bold</strong> tail</p>', 'lead **bold** tail'],
+    ['<p><strong>bold</strong> tail</p>', '**bold** tail'],
+    ['<p>lead <strong>bold</strong></p>', 'lead **bold**'],
+    ['<p><strong>tight</strong></p>', '**tight**'],
+    ['<p><em>word </em>next</p>', '_word_ next'],
+    ['<p><strong> [X] </strong> emoji</p>', '**[X]** emoji'],
+    ['<p><a href="http://e.com">link </a>after</p>', '[link](http://e.com) after'],
+    ['<p><strong>A</strong><strong>B</strong></p>', '**A****B**']
+];
+
+flankingWhitespaceCases.forEach(([html, expected]) => {
+    test(`preserves flanking whitespace: ${html}`, t => {
+        var result = AdaptiveHtml.toJSON(html);
+        t.deepEqual(result, {
+            type: "AdaptiveCard",
+            body: [{
+                type: "TextBlock",
+                text: expected,
+                wrap: true
+            }],
+            actions: [],
+            version: expectedVersion
+        });
+    });
+});
+
+/**
+ * Guard, not a consequence of the flanking-whitespace change: whitespace-only
+ * strong/em never reaches the emphasis rule, because rules.blank matches first
+ * (its filter excludes only a/th/td). This asserts the flanking change did not
+ * accidentally start emitting bare markers here.
+ */
+test('whitespace-only emphasis is handled by the blank rule, not the marker rules', t => {
+    var result = AdaptiveHtml.toJSON('<p>a<strong> </strong>b</p>');
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "TextBlock",
+            text: "a b",
+            wrap: true
+        }],
+        actions: [],
+        version: expectedVersion
+    });
+});
+
+/**
+ * A link with no text of its own keeps its pre-existing output. rules.blank
+ * excludes 'a', so unlike strong/em these do reach the marker rule with empty
+ * content, and the flanking-whitespace change deliberately leaves that alone.
+ * "[](url)" is not useful output, but fixing it means giving the Image a
+ * selectAction, which is a separate change.
+ */
+test('image-only link keeps its existing empty-marker output', t => {
+    var result = AdaptiveHtml.toJSON('<a href="https://google.com"><img alt="a" src="https://fake-image.com" /></a>');
+    t.deepEqual(result, {
+        type: "AdaptiveCard",
+        body: [{
+            type: "TextBlock",
+            text: "[](https://google.com)",
+            wrap: true
+        }, {
+            type: "Image",
+            url: "https://fake-image.com",
+            altText: "a"
+        }],
+        actions: [],
+        version: expectedVersion
     });
 });

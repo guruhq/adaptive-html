@@ -46,7 +46,11 @@ var cardTypes = Object.freeze({
   textBlock: "TextBlock",
   container: "Container",
   image: "Image",
-  adaptiveCard: "AdaptiveCard"
+  adaptiveCard: "AdaptiveCard",
+  column: "Column",
+  columnSet: "ColumnSet",
+  richTextBlock: "RichTextBlock",
+  textRun: "TextRun"
 });
 function isTextBlock(card) {
   return isCardType(card, cardTypes.textBlock);
@@ -57,8 +61,20 @@ function isContainer(card) {
 function isImage(card) {
   return isCardType(card, cardTypes.image);
 }
+function isColumn(card) {
+  return isCardType(card, cardTypes.column);
+}
+function isColumnSet(card) {
+  return isCardType(card, cardTypes.columnSet);
+}
+function isRichTextBlock(card) {
+  return isCardType(card, cardTypes.richTextBlock);
+}
+function isTextRun(card) {
+  return isCardType(card, cardTypes.textRun);
+}
 function isCardElement(card) {
-  return isTextBlock(card) || isImage(card) || isContainer(card);
+  return isTextBlock(card) || isImage(card) || isContainer(card) || isColumn(card) || isColumnSet(card) || isRichTextBlock(card) || isTextRun(card);
 }
 function getTextBlocks(cardCollection) {
   return getBlocks(cardCollection, cardTypes.textBlock);
@@ -66,10 +82,23 @@ function getTextBlocks(cardCollection) {
 function getNonTextBlocks(cardCollection) {
   return getBlocks(cardCollection, [cardTypes.image, cardTypes.container]);
 }
-function getTextBlocksAsString(cardCollection) {
+/**
+ * Like getTextBlocksAsString, but without the trim, so callers that wrap the
+ * text in markers can tell whether it had leading or trailing whitespace.
+ */
+
+function getTextBlocksAsRawString(cardCollection) {
   return getTextBlocks(cardCollection).map(function (textBlock) {
     return textBlock.text;
-  }).join(' ').replace(/ +/g, ' ').trim();
+  }).join(' ').replace(/ +/g, ' ');
+}
+function getTextBlocksAsString(cardCollection) {
+  return getTextBlocksAsRawString(cardCollection).trim();
+} // container has the only two required properties (type, items)
+// https://adaptivecards.io/explorer/Container.html
+
+function isContainerWithRequiredProperties(element) {
+  return isContainer(element) && Object.keys(element).length === 2 && Array.isArray(element.items);
 }
 
 function setOptions(obj, options) {
@@ -83,12 +112,18 @@ function createCard(elements) {
     type: cardTypes.adaptiveCard,
     body: [],
     actions: [],
-    version: '1.0'
+    version: '1.2'
   };
-  var body = toArray(elements);
+  var body = toArray(elements); // remove extra container wrapping for a single element that only has required properties (type, items)
+  // otherwise leave the container wrap since there could be additional styling
+  // https://adaptivecards.io/explorer/Container.html
 
-  if (Array.isArray(elements) && elements.length === 1 && isContainer(elements[0])) {
-    body = toArray(unwrap(elements[0]));
+  if (Array.isArray(elements) && elements.length === 1) {
+    var singleElement = elements[0];
+
+    if (isContainerWithRequiredProperties(singleElement)) {
+      body = unwrap(singleElement);
+    }
   }
 
   card.body = body;
@@ -146,7 +181,39 @@ function createImage(url, options) {
   };
   setOptions(image, options);
   return image;
-} // Wrap adaptive card elements in a container
+}
+function createColumn(content, options) {
+  var column = {
+    type: cardTypes.column,
+    items: content
+  };
+  setOptions(column, options);
+  return column;
+}
+function createColumnSet(columns, options) {
+  var columnSet = {
+    type: cardTypes.columnSet,
+    columns: columns
+  };
+  setOptions(columnSet, options);
+  return columnSet;
+}
+function createRichTextBlock(content, options) {
+  var richTextBlock = {
+    type: cardTypes.richTextBlock,
+    inlines: content
+  };
+  setOptions(richTextBlock, options);
+  return richTextBlock;
+}
+function createTextRun(content, options) {
+  var textRun = {
+    type: cardTypes.textRun,
+    text: content
+  };
+  setOptions(textRun, options);
+  return textRun;
+}
 
 function wrap(elements, options) {
   elements = toArray(elements);
@@ -173,11 +240,11 @@ function unwrap(container) {
   return container.items || [];
 }
 
-var blockElements = ['address', 'article', 'aside', 'audio', 'blockquote', 'body', 'canvas', 'center', 'dd', 'dir', 'div', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'html', 'isindex', 'li', 'main', 'menu', 'nav', 'noframes', 'noscript', 'ol', 'output', 'p', 'pre', 'section', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul'];
+var blockElements = ['address', 'article', 'aside', 'audio', 'blockquote', 'body', 'canvas', 'center', 'dd', 'dir', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'html', 'isindex', 'li', 'main', 'menu', 'nav', 'noframes', 'noscript', 'ol', 'output', 'p', 'pre', 'section', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul'];
 function isBlock(node) {
   return blockElements.indexOf(node.nodeName.toLowerCase()) !== -1;
 }
-var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+var voidElements = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'span', 'iframe', 'div'];
 function isVoid(node) {
   return voidElements.indexOf(node.nodeName.toLowerCase()) !== -1;
 }
@@ -191,7 +258,7 @@ function hasVoid(node) {
 var rules = {};
 rules.blank = {
   filter: function filter(node) {
-    return ['A', 'TH', 'TD'].indexOf(node.nodeName) === -1 && /^\s*$/i.test(node.textContent) && !isVoid(node) && !hasVoid(node);
+    return ['a', 'th', 'td'].indexOf(node.nodeName.toLowerCase()) === -1 && /^\s*$/i.test(node.textContent) && !isVoid(node) && !hasVoid(node);
   },
   replacement: function replacement(content, node) {
     if (node.textContent) {
@@ -200,7 +267,7 @@ rules.blank = {
       });
     }
 
-    return null;
+    return content;
   }
 };
 rules.text = {
@@ -234,7 +301,7 @@ rules.list = {
   filter: ['ul', 'ol'],
   // content = array of listitem containers
   replacement: function replacement(listItemContainers, node) {
-    var isOrdered = node.nodeName === 'OL';
+    var isOrdered = node.nodeName.toLowerCase() === 'ol';
     var startIndex = parseInt(node.getAttribute('start'), 10) || 1; // only applicable to ordered lists
 
     var blocks = (listItemContainers || []).map(function (listItemContainer, listItemIndex) {
@@ -296,11 +363,11 @@ rules.listItem = {
 };
 rules.inlineLink = {
   filter: function filter(node) {
-    return node.nodeName === 'A' && node.getAttribute('href');
+    return node.nodeName.toLowerCase() === 'a' && node.getAttribute('href');
   },
   replacement: function replacement(content, node) {
     var href = node.getAttribute('href');
-    return handleTextEffects(content, function (text) {
+    return handleWrappedTextEffects(content, function (text) {
       return "[".concat(text, "](").concat(href, ")");
     });
   }
@@ -308,7 +375,7 @@ rules.inlineLink = {
 rules.emphasis = {
   filter: ['em', 'i'],
   replacement: function replacement(content, node) {
-    return handleTextEffects(content, function (text) {
+    return handleWrappedTextEffects(content, function (text) {
       return "_".concat(text, "_");
     });
   }
@@ -316,19 +383,127 @@ rules.emphasis = {
 rules.strong = {
   filter: ['strong', 'b'],
   replacement: function replacement(content, node) {
-    return handleTextEffects(content, function (text) {
+    return handleWrappedTextEffects(content, function (text) {
       return "**".concat(text, "**");
+    });
+  }
+};
+rules.iframe = {
+  filter: 'iframe',
+  replacement: function replacement(content, node) {
+    var fallbackText = 'To view this embedded content, please open this Card in the Guru app.';
+    var guruContentAttribute = node.getAttribute('data-ghq-card-content-type') || '';
+
+    if (guruContentAttribute === "VIDEO") {
+      fallbackText = 'To view this video content, please open this Card in the Guru app.';
+    }
+
+    return wrap(createTextBlock(fallbackText), {
+      style: 'attention'
     });
   }
 };
 rules.image = {
   filter: 'img',
   replacement: function replacement(content, node) {
-    var alt = node.alt || '';
+    var alt = node.getAttribute('alt') || '';
     var src = node.getAttribute('src') || '';
     return createImage(src, {
       altText: alt
     });
+  }
+};
+rules.tableSection = {
+  filter: ['thead', 'tbody', 'tfoot'],
+  replacement: function replacement(content, node) {
+    var fallbackText = 'To view this table content, please open this Card in the Guru app.';
+    var maxColumns = 3;
+    var maxCellCharacters = 100;
+    var rows = content.length;
+    var columns = (content[0] || {
+      items: []
+    }).items.length;
+
+    if (columns > maxColumns) {
+      return wrap(createTextBlock(fallbackText), {
+        style: 'attention'
+      });
+    }
+
+    for (var i = 0; i < rows; i++) {
+      var items = content[i].items || [];
+
+      if (items.some(function (item) {
+        return (item.text || '').length > maxCellCharacters;
+      })) {
+        return wrap(createTextBlock(fallbackText), {
+          style: 'attention'
+        });
+      }
+    } //transform into columns
+
+
+    var columnSet = [];
+    var columnBlocks = [];
+
+    for (var i = 0; i < columns; i++) {
+      for (var j = 0; j < rows; j++) {
+        columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+      }
+
+      columnSet = columnSet.concat(createColumn(columnBlocks, {
+        style: 'emphasis'
+      }));
+      columnBlocks = [];
+    }
+
+    return createColumnSet(columnSet);
+  }
+};
+rules.tableRow = {
+  filter: 'tr',
+  replacement: function replacement(content, node) {
+    return wrap(content);
+  }
+};
+rules.tableCell = {
+  filter: ['th', 'td'],
+  replacement: function replacement(content, node) {
+    return content;
+  }
+};
+rules.table = {
+  filter: 'table',
+  replacement: function replacement(content, node) {
+    return content;
+  }
+};
+rules.code = {
+  filter: 'code',
+  replacement: function replacement(content, node) {
+    var guruContentAttribute = node.getAttribute('data-ghq-card-content-type');
+    var text = content[0].text || '';
+
+    switch (guruContentAttribute) {
+      case 'CODE_SNIPPET':
+        return createRichTextBlock(toArray(createTextRun(text, {
+          fontType: 'monospace',
+          highlight: true,
+          wrap: true
+        })));
+
+      case 'CODE_BLOCK_LINE':
+        var items = createRichTextBlock(toArray(createTextRun(text, {
+          fontType: 'monospace',
+          wrap: true
+        })));
+        return wrap(items, {
+          style: 'emphasis'
+        });
+
+      default:
+        return wrap(content);
+    }
   }
 };
 /* This must be the last rule */
@@ -352,6 +527,40 @@ function handleTextEffects(contentCollection, textFunc) {
 
   if (typeof textFunc === 'function') {
     text = textFunc(text);
+  }
+
+  return {
+    text: text,
+    nonText: nonText
+  };
+}
+/**
+ * handleTextEffects for rules that wrap their content in markers.
+ *
+ * Markdown-style markers do not apply across a leading or trailing space, so
+ * the marker has to sit against the text and any flanking whitespace has to be
+ * re-emitted outside it. Without this, the trim() inside
+ * getTextBlocksAsString() silently swallows the separator and the wrapped text
+ * runs into its neighbour: "<strong>Label: </strong>value" would serialize as
+ * "**Label:**value" instead of "**Label:** value".
+ *
+ * This mirrors turndown's flankingWhitespace handling, which this fork dropped.
+ */
+
+
+function handleWrappedTextEffects(contentCollection, textFunc) {
+  var nonText = getNonTextBlocks(contentCollection) || [];
+  var raw = getTextBlocksAsRawString(contentCollection) || '';
+  var text = raw.trim();
+
+  if (typeof textFunc === 'function') {
+    // Only pad when there is text to flank. Content that is empty or all
+    // whitespace goes through textFunc untouched, exactly as it did before,
+    // so this helper differs from handleTextEffects in the flanking
+    // whitespace and nothing else.
+    var leading = text && /^\s/.test(raw) ? ' ' : '';
+    var trailing = text && /\s$/.test(raw) ? ' ' : '';
+    text = leading + textFunc(text) + trailing;
   }
 
   return {
@@ -464,7 +673,7 @@ function collapseWhitespace(options) {
       prevText = node;
     } else if (node.nodeType === 1) {
       // Node.ELEMENT_NODE
-      if (isBlock(node) || node.nodeName === 'BR') {
+      if (isBlock(node) || node.nodeName === 'BR' || node.nodeName === 'DIV') {
         if (prevText) {
           prevText.data = prevText.data.replace(/ $/, '');
         }
@@ -472,7 +681,7 @@ function collapseWhitespace(options) {
         prevText = null;
         prevVoid = false;
       } else if (isVoid(node)) {
-        // Avoid trimming space around non-block, non-BR void elements.
+        // Avoid trimming space around non-block, non-BR, non-DIV void elements.
         prevText = null;
         prevVoid = true;
       }

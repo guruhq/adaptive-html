@@ -3,14 +3,22 @@ import {
     unwrap,
     createTextBlock,
     createHeadingTextBlock,
-    createImage
+    createColumn,
+    createColumnSet,
+    createImage,
+    createTextRun,
+    createRichTextBlock
 } from '../lib/adaptiveCardHelper';
 import {
     getTextBlocksAsString,
+    getTextBlocksAsRawString,
     getNonTextBlocks,
     isTextBlock,
     cardTypes
 } from '../lib/adaptiveCardFilter';
+import {
+    toArray
+} from '../lib/utilityHelper';
 import {
     isVoid,
     hasVoid,
@@ -23,7 +31,7 @@ const rules = {};
 rules.blank = {
     filter: function (node) {
         return (
-            ['A', 'TH', 'TD'].indexOf(node.nodeName) === -1 &&
+            ['a', 'th', 'td'].indexOf(node.nodeName.toLowerCase()) === -1 &&
             /^\s*$/i.test(node.textContent) &&
             !isVoid(node) &&
             !hasVoid(node)
@@ -35,7 +43,7 @@ rules.blank = {
                 return node.textContent;
             });
         }
-        return null;
+        return content;
     }
 };
 
@@ -75,7 +83,7 @@ rules.list = {
     filter: ['ul', 'ol'],
     // content = array of listitem containers
     replacement: function (listItemContainers, node) {
-        var isOrdered = node.nodeName === 'OL';
+        var isOrdered = node.nodeName.toLowerCase() === 'ol';
         var startIndex = parseInt(node.getAttribute('start'), 10) || 1; // only applicable to ordered lists
         var blocks = (listItemContainers || []).map((listItemContainer, listItemIndex) => {
             var listItemElems = unwrap(listItemContainer);
@@ -137,13 +145,13 @@ rules.listItem = {
 rules.inlineLink = {
     filter: function (node) {
         return (
-            node.nodeName === 'A' &&
+            node.nodeName.toLowerCase() === 'a' &&
             node.getAttribute('href')
         );
     },
     replacement: function (content, node) {
         var href = node.getAttribute('href');
-        return handleTextEffects(content, function (text) {
+        return handleWrappedTextEffects(content, function (text) {
             return `[${text}](${href})`;
         });
     }
@@ -152,7 +160,7 @@ rules.inlineLink = {
 rules.emphasis = {
     filter: ['em', 'i'],
     replacement: function (content, node) {
-        return handleTextEffects(content, function (text) {
+        return handleWrappedTextEffects(content, function (text) {
             return `_${text}_`;
         });
     }
@@ -161,20 +169,120 @@ rules.emphasis = {
 rules.strong = {
     filter: ['strong', 'b'],
     replacement: function (content, node) {
-        return handleTextEffects(content, function (text) {
+        return handleWrappedTextEffects(content, function (text) {
             return `**${text}**`;
         });
     }
 };
 
+rules.iframe = {
+    filter: 'iframe',
+    replacement: function (content, node) {
+        let fallbackText = 'To view this embedded content, please open this Card in the Guru app.';
+        const guruContentAttribute = node.getAttribute('data-ghq-card-content-type') || '';
+
+        if (guruContentAttribute === "VIDEO") {
+            fallbackText = 'To view this video content, please open this Card in the Guru app.';
+        }
+
+        return wrap(createTextBlock(fallbackText), { style: 'attention' });
+    }
+}
+
 rules.image = {
     filter: 'img',
     replacement: function (content, node) {
-        var alt = node.alt || '';
-        var src = node.getAttribute('src') || '';
+        const alt = node.getAttribute('alt') || '';
+        const src = node.getAttribute('src') || '';
         return createImage(src, {
             altText: alt
         });
+    }
+};
+
+rules.tableSection = {
+    filter: ['thead', 'tbody', 'tfoot'],
+    replacement: function replacement(content, node) {
+        const fallbackText = 'To view this table content, please open this Card in the Guru app.';
+        const maxColumns = 3;
+        const maxCellCharacters = 100;
+        const rows = content.length;
+        const columns = (content[0] || { items: []}).items.length;
+
+        if (columns > maxColumns) {
+            return wrap(createTextBlock(fallbackText), { style: 'attention' });
+        }
+
+        for (var i = 0; i < rows; i++) {
+            let items = content[i].items || [];
+            if (items.some((item) => (item.text || '').length > maxCellCharacters))  {
+              return wrap(createTextBlock(fallbackText), { style: 'attention' });
+            }
+        }
+  
+        //transform into columns
+        let columnSet = [];
+        let columnBlocks = [];
+        for (var i = 0; i < columns; i++) {
+            for (var j = 0; j < rows; j++) {
+                columnBlocks = columnBlocks.concat(toArray(content[j].items[i]));
+            }
+            columnSet = columnSet.concat(createColumn(columnBlocks, { style: 'emphasis' }));
+            columnBlocks = [];
+        }
+  
+        return createColumnSet(columnSet);
+    }
+};
+
+rules.tableRow = {
+    filter: 'tr',
+    replacement: function replacement(content, node) {
+      return wrap(content);
+    }
+};
+
+rules.tableCell = {
+    filter: ['th', 'td'],
+    replacement: function replacement(content, node) {
+      return content;
+    }
+};
+
+rules.table = {
+    filter: 'table',
+    replacement: function replacement(content, node) {
+      return content;
+    }
+};
+
+rules.code = {
+    filter: 'code',
+    replacement: function replacement(content, node) {
+        const guruContentAttribute = node.getAttribute('data-ghq-card-content-type');
+        const text = content[0].text || '';
+
+        switch (guruContentAttribute) {
+            case 'CODE_SNIPPET':
+                return createRichTextBlock(
+                    toArray(createTextRun(text, {
+                        fontType: 'monospace',
+                        highlight: true,
+                        wrap: true
+                    })));
+            case 'CODE_BLOCK_LINE':
+                const items = createRichTextBlock(
+                    toArray(createTextRun(text, {
+                        fontType: 'monospace',
+                        wrap: true
+                    })));
+    
+                return wrap(items, {
+                    style: 'emphasis'
+                });
+            default: 
+                return wrap(content);
+        }
     }
 };
 
@@ -194,6 +302,37 @@ function handleTextEffects(contentCollection, textFunc) {
     var text = getTextBlocksAsString(contentCollection) || '';
     if (typeof textFunc === 'function') {
         text = textFunc(text);
+    }
+    return {
+        text,
+        nonText
+    };
+}
+
+/**
+ * handleTextEffects for rules that wrap their content in markers.
+ *
+ * Markdown-style markers do not apply across a leading or trailing space, so
+ * the marker has to sit against the text and any flanking whitespace has to be
+ * re-emitted outside it. Without this, the trim() inside
+ * getTextBlocksAsString() silently swallows the separator and the wrapped text
+ * runs into its neighbour: "<strong>Label: </strong>value" would serialize as
+ * "**Label:**value" instead of "**Label:** value".
+ *
+ * This mirrors turndown's flankingWhitespace handling, which this fork dropped.
+ */
+function handleWrappedTextEffects(contentCollection, textFunc) {
+    var nonText = getNonTextBlocks(contentCollection) || [];
+    var raw = getTextBlocksAsRawString(contentCollection) || '';
+    var text = raw.trim();
+    if (typeof textFunc === 'function') {
+        // Only pad when there is text to flank. Content that is empty or all
+        // whitespace goes through textFunc untouched, exactly as it did before,
+        // so this helper differs from handleTextEffects in the flanking
+        // whitespace and nothing else.
+        var leading = text && /^\s/.test(raw) ? ' ' : '';
+        var trailing = text && /\s$/.test(raw) ? ' ' : '';
+        text = leading + textFunc(text) + trailing;
     }
     return {
         text,
